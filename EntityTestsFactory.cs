@@ -1,6 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
-using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,23 +7,24 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class CreateUseCaseFactory
+    public static class EntityTestsFactory
     {
         public static string Create(string fileContent)
         {
             Validate(fileContent);
 
             var properties = GetPropertiesInfo(fileContent);
+            var methods = GetMethodsInfo(fileContent);
 
             if (!properties.Any())
                 throw new ValidationException("It wasn't identified public properties to generate builder class");
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, properties);
+            return CreateUseCaseTestsClass(fileContent, originalClassName, properties, methods);
         }
 
-        private static string CreateUseCaseClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, IList<MethodInfo> methods)
         {
             var content = new StringBuilder();
 
@@ -32,25 +32,28 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using FluentValidation;");
+            content.AppendLine("using Best.Practices.Core.Common;");
             content.AppendLine("using Best.Practices.Core.Extensions;");
-            content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
+            content.AppendLine("using FluentAssertions;");
+            content.AppendLine("using Moq;");
+            content.AppendLine("using Xunit;");
+
             content.AppendLine("");
             content.Append(GetNameSpace(fileContent));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "CreateUseCase");
+            var newClassName = string.Concat(originalClassName, "Tests");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Create{originalClassName}Input, {originalClassName}Output>"));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
             content.AppendLine("\t{");
 
             GeneratePrivateVariables(content, originalClassName);
 
-            GenerateRepositoryConstructor(content, originalClassName, newClassName);
+            GenerateTestConstructor(content, originalClassName, newClassName);
 
-            GenerateInternalExecuteMethod(content, originalClassName, properties);
+            GenerateTestMethods(content, originalClassName, properties, methods);
 
             content.AppendLine("\t}");
 
@@ -65,37 +68,33 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
+        private static void GenerateTestConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Create{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
+            content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_validator = validator;");
-            content.AppendLine("");
-            content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
+            content.AppendLine($"\t\t\t_entity = new {originalClassName}();");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
 
-        private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
+        private static void GenerateTestMethods(StringBuilder content, string className, IList<PropertyInfo> properties, IList<MethodInfo> methods)
         {
-            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Create{className}Input input)");
-            content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t _validator.ValidateAndThrow(input);");
-            content.AppendLine("");
-            content.AppendLine($"\t\t\t await SaveChangesAsync();");
-            content.AppendLine("");
-            content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output(new{className}));");
-            content.AppendLine("\t\t}");
-            content.AppendLine();
+            foreach (var method in methods)
+            {
+                content.AppendLine("\t\t[Fact]");
+                content.AppendLine($"\t\tpublic void {method.Name}_EverythingIsOk_ReturnsSuccess()");
+                content.AppendLine("\t\t{");
+                content.AppendLine("");
+                content.AppendLine($"\t\t\t_entity.{method.Name}();");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly IValidator<Create{originalClassName}Input> _validator;");
-            content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
-            content.AppendLine($"");
-            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while updating the application.\";");
+            content.AppendLine($"\t\tprivate readonly {originalClassName} _entity;");
         }
 
         private static string GetNameSpace(string fileContent)
@@ -122,6 +121,18 @@ namespace BestPracticesCodeGenerator
             foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
             {
                 propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
+            }
+
+            return propertyes;
+        }
+
+        private static IList<MethodInfo> GetMethodsInfo(string fileContent)
+        {
+            var propertyes = new List<MethodInfo>();
+
+            foreach (Match item in Regex.Matches(fileContent, @"\b(\w+)\s+(\w+)\s*\(\s*\)"))
+            {
+                propertyes.Add(new MethodInfo(item.Groups[1].Value, item.Groups[2].Value));
             }
 
             return propertyes;

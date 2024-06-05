@@ -76,7 +76,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_unitOfWork = new Mock<IUnitOfWork>();");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = new Mock<I{originalClassName}Repository>();");
-            content.AppendLine($"\t\t\t_useCase = new {originalClassName}UseCase(_{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
+            content.AppendLine($"\t\t\t_useCase = new Create{originalClassName}UseCase(_{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine("\t\t}");

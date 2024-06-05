@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class CreateUseCaseFactory
+    public static class DeleteUseCaseFactory
     {
         public static string Create(string fileContent)
         {
@@ -40,9 +40,9 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "CreateUseCase");
+            var newClassName = string.Concat(originalClassName, "DeleteUseCase");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Create{originalClassName}Input, {originalClassName}Output>"));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Guid, bool>"));
 
             content.AppendLine("\t{");
 
@@ -68,10 +68,8 @@ namespace BestPracticesCodeGenerator
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Create{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
+            content.AppendLine($"\t\tpublic {newClassName}(I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_validator = validator;");
-            content.AppendLine("");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine("\t\t}");
             content.AppendLine();
@@ -79,23 +77,26 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Create{className}Input input)");
+            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<bool>> InternalExecuteAsync(Guid {className.GetWordWithFirstLetterDown()}Id)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t _validator.ValidateAndThrow(input);");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\tvar previous{className} = _{className.GetWordWithFirstLetterDown()}Repository.GetById({className.GetWordWithFirstLetterDown()}Id).Result");
+            content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\tprevious{className}.SetStateAsDeleted();");
             content.AppendLine("");
             content.AppendLine($"\t\t\t await SaveChangesAsync();");
             content.AppendLine("");
-            content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output(new{className}));");
+            content.AppendLine($"\t\t\t return CreateSuccessOutput(true);");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly IValidator<Create{originalClassName}Input> _validator;");
             content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
-            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while updating the application.\";");
+            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while deleting the {originalClassName}.\";");
         }
 
         private static string GetNameSpace(string fileContent)

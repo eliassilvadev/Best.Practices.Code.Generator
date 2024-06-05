@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class CreateUseCaseFactory
+    public static class DeleteUseCaseTestsFactory
     {
         public static string Create(string fileContent)
         {
@@ -21,10 +21,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, properties);
+            return CreateUseCaseTestsClass(fileContent, originalClassName, properties);
         }
 
-        private static string CreateUseCaseClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
         {
             var content = new StringBuilder();
 
@@ -32,23 +32,27 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using FluentValidation;");
+            content.AppendLine("using Best.Practices.Core.Common;");
             content.AppendLine("using Best.Practices.Core.Extensions;");
             content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
+            content.AppendLine("using FluentAssertions;");
+            content.AppendLine("using Moq;");
+            content.AppendLine("using Xunit;");
+
             content.AppendLine("");
             content.Append(GetNameSpace(fileContent));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "CreateUseCase");
+            var newClassName = string.Concat(originalClassName, "DeleteUseCaseTests");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Create{originalClassName}Input, {originalClassName}Output>"));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
             content.AppendLine("\t{");
 
             GeneratePrivateVariables(content, originalClassName);
 
-            GenerateRepositoryConstructor(content, originalClassName, newClassName);
+            GenerateTestConstructor(content, originalClassName, newClassName);
 
             GenerateInternalExecuteMethod(content, originalClassName, properties);
 
@@ -65,12 +69,14 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
+        private static void GenerateTestConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Create{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
+            content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_validator = validator;");
+            content.AppendLine($"\t\t\t_unitOfWork = new Mock<IUnitOfWork>();");
+            content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = new Mock<I{originalClassName}Repository>();");
+            content.AppendLine($"\t\t\t_useCase = new Delete{originalClassName}UseCase(_{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine("\t\t}");
@@ -79,23 +85,25 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Create{className}Input input)");
+            content.AppendLine("\t\t[Fact]");
+            content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t _validator.ValidateAndThrow(input);");
+            content.AppendLine($"\t\t\tvar id = Guid.NewGuid();");
             content.AppendLine("");
-            content.AppendLine($"\t\t\t await SaveChangesAsync();");
+            content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");
-            content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output(new{className}));");
+            content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.SampleId), Times.Once);");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly IValidator<Create{originalClassName}Input> _validator;");
-            content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
+            content.AppendLine($"\t\tprivate readonly {originalClassName}DeleteUseCase _useCase;");
+            content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
+            content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
-            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while updating the application.\";");
         }
 
         private static string GetNameSpace(string fileContent)

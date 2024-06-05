@@ -37,6 +37,10 @@ namespace BestPracticesCodeGenerator
 
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseFactory.Create(fileContent));
 
+            newFileName = string.Concat("Delete", fileName.Substring(0, fileName.Length - 3), "UseCase.cs");
+
+            File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseFactory.Create(fileContent));
+
             newFileName = string.Concat("Create", fileName.Substring(0, fileName.Length - 3), "Input.cs");
 
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputDtoFactory.Create(fileContent));
@@ -61,6 +65,14 @@ namespace BestPracticesCodeGenerator
 
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseTestsFactory.Create(fileContent));
 
+            newFileName = string.Concat(fileName.Substring(0, fileName.Length - 3), "Tests.cs");
+
+            File.WriteAllText(Path.Combine(filePath, newFileName), EntityTestsFactory.Create(fileContent));
+
+            newFileName = string.Concat("Delete", fileName.Substring(0, fileName.Length - 3), "UseCaseTests.cs");
+
+            File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseTestsFactory.Create(fileContent));
+
             newFileName = string.Concat(fileName.Substring(0, fileName.Length - 3), "InputValidator.cs");
 
             File.WriteAllText(Path.Combine(filePath, newFileName), InputValidatorFactory.Create(fileContent));
@@ -84,6 +96,10 @@ namespace BestPracticesCodeGenerator
             newFileName = string.Concat("Update", fileName.Substring(0, fileName.Length - 3), "InputBuilder.cs");
 
             File.WriteAllText(Path.Combine(filePath, newFileName), OutputBuilderFactory.Create(fileContent));
+
+            newFileName = string.Concat(fileName.Substring(0, fileName.Length - 3), "CqrsCommandProvider.cs");
+
+            File.WriteAllText(Path.Combine(filePath, newFileName), DapperCommandProviderFactory.Create(fileContent));
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", doc.WindowFrame.Caption);
         }

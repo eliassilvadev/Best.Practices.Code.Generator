@@ -42,7 +42,7 @@ namespace BestPracticesCodeGenerator
 
             var newClassName = string.Concat(originalClassName, "UpdateUseCase");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Update{originalClassName}Input, Update{originalClassName}Output>"));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Update{originalClassName}Input, {originalClassName}Output>"));
 
             content.AppendLine("\t{");
 
@@ -78,11 +78,11 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<Update{className}Output>> InternalExecuteAsync(Update{className}Input input)");
+            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Update{className}Input input)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t _validator.ValidateAndThrow(input);");
+            content.AppendLine($"\t\t\t_validator.ValidateAndThrow(input);");
             content.AppendLine("");
-            content.AppendLine($"\t\t\t _repository.GetById(input.Id.Value).Result");
+            content.AppendLine($"\t\t\tvar previous{className} = _{className.GetWordWithFirstLetterDown()}Repository.GetById(input.Id.Value).Result");
             content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id));");
             content.AppendLine("");
             content.AppendLine($"\t\t\t await SaveChangesAsync();");

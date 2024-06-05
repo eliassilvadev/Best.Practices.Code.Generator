@@ -45,12 +45,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EntityTestsFactory.cs" />
+    <Compile Include="Dtos\MethodInfo.cs" />
     <Compile Include="OutputBuilderFactory.cs" />
+    <Compile Include="DapperCommandProviderFactory.cs" />
     <Compile Include="UpdateInputBuilderFactory.cs" />
     <Compile Include="CreateInputBuilderFactory.cs" />
     <Compile Include="InputValidatorTestsFactory.cs" />
     <Compile Include="InputValidatorFactory.cs" />
     <Compile Include="DapperTableDefinitionFactory.cs" />
+    <Compile Include="DeleteUseCaseFactory.cs" />
+    <Compile Include="DeleteUseCaseTestsFactory.cs" />
     <Compile Include="UpdateUseCaseTestsFactory.cs" />
     <Compile Include="CreateUseCaseTestsFactory.cs" />
     <Compile Include="OutputDtoFactory.cs" />
