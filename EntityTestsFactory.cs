@@ -10,19 +10,18 @@ namespace BestPracticesCodeGenerator
 {
     public static class EntityTestsFactory
     {
-        public static string Create(string fileContent, string filePath)
+        public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
             Validate(fileContent);
 
-            var properties = GetPropertiesInfo(fileContent);
             var methods = GetMethodsInfo(fileContent);
 
-            if (!properties.Any())
+            if (!classProperties.Any())
                 throw new ValidationException("It wasn't identified public properties to generate builder class");
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseTestsClass(fileContent, originalClassName, properties, methods, filePath);
+            return CreateUseCaseTestsClass(fileContent, originalClassName, classProperties, methods, filePath);
         }
 
         private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, IList<MethodInfo> methods, string filePath)

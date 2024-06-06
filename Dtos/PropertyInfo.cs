@@ -4,7 +4,8 @@
     {
         public string Type { get; }
         public string Name { get; }
-
+        public bool GenerateGetMethodOnRepository { get; set; }
+        public bool ValidateDuplicationsOnRepository { get; set; }
         public PropertyInfo(string type, string name)
         {
             Type = type;

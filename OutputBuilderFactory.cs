@@ -11,18 +11,16 @@ namespace BestPracticesCodeGenerator
 {
     public static class OutputBuilderFactory
     {
-        public static string Create(string fileContent, string filePath)
+        public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
             Validate(fileContent);
 
-            var properties = GetPropertiesInfo(fileContent);
-
-            if (!properties.Any())
+            if (!classProperties.Any())
                 throw new ValidationException("It wasn't identified public properties to generate builder class");
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateBuilderClass(fileContent, originalClassName, properties, filePath);
+            return CreateBuilderClass(fileContent, originalClassName, classProperties, filePath);
         }
 
         private static string CreateBuilderClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
