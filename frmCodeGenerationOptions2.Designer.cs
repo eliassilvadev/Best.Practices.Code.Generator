@@ -1,6 +1,6 @@
 ﻿namespace BestPracticesCodeGenerator
 {
-    partial class frmCodeGenerationOptions
+    partial class frmCodeGenerationOptions2
     {
         /// <summary>
         /// Required designer variable.

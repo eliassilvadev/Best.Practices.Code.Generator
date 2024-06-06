@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="BestPracticesCodeGenerator.frmCodeGenerationOptionsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Name="MyToolWindow"> 
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="91*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Name="PNL_GenerateClasses" Orientation="Vertical" Grid.RowSpan="2"  Margin="0,50,0,0" Visibility="Hidden">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Use cases to generate" Margin="10,0,0,0"/>
+                <CheckBox Name="SEL_GenerateCreateUseCase" Content="CreateUseCase" IsChecked="False" Margin="10,0,0,0" >
+                    <CheckBox.Style>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+                <CheckBox Name="SEL_GenerateUpdateUseCase" Content="UpdateUseCase" IsChecked="False" Margin="10,0,0,0" >
+                    <CheckBox.Style>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+                <CheckBox Name="SEL_GenerateDeleteUseCase" Content="DeleteUseCase" IsChecked="False" Margin="10,0,0,0" >
+                    <CheckBox.Style>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.RowSpan="2" Margin="0,0,0,0">
+                <TextBlock Text="Class properties" HorizontalAlignment="Center" />
+                <DataGrid Name="GRD_Properties" >
+                </DataGrid>
+            </StackPanel>
+
+            <Button Content="Generate" Click="BTN_Generate_Click" Width="120" Height="30" Name="BTN_Generate" Margin="0,0,0,0" IsEnabled="False"/>
+            <Button Content="Reload" Click="BTN_Reload_Click" Width="120" Height="30" Name="BTN_Reload" Margin="0,0,0,0" IsEnabled="False"/>
+        </StackPanel>
+        <StackPanel Name="PNL_InstructionsToLoadClass" Visibility="Visible"   HorizontalAlignment="Center"  VerticalAlignment="Center">
+            <TextBlock
+                Text="To generate classes of DDD layers from a model, right click on an entity class and select 'Generate Best.Practices code'"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                TextAlignment="Center"
+                FontSize="14"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

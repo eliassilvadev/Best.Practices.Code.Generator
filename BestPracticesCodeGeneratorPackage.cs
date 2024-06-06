@@ -11,11 +11,13 @@ namespace BestPracticesCodeGenerator
     [InstalledProductRegistration(Vsix.Name, Vsix.Description, Vsix.Version)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.BestPracticesCodeGeneratorString)]
+    [ProvideToolWindow(typeof(frmCodeGenerationOptions))]
     public sealed class BestPracticesCodeGeneratorPackage : ToolkitPackage
     {
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.RegisterCommandsAsync();
+            await frmCodeGenerationOptionsCommand.InitializeAsync(this);
         }
     }
 }
