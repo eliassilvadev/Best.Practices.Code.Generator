@@ -2,6 +2,7 @@
 using BestPracticesCodeGenerator.Exceptions;
 using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace BestPracticesCodeGenerator
 {
     public static class UpdateUseCaseFactory
     {
-        public static string Create(string fileContent)
+        public static string Create(string fileContent, string filePath)
         {
             Validate(fileContent);
 
@@ -21,10 +22,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, properties);
+            return CreateUseCaseClass(fileContent, originalClassName, properties, filePath);
         }
 
-        private static string CreateUseCaseClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateUseCaseClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -35,12 +36,13 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using FluentValidation;");
             content.AppendLine("using Best.Practices.Core.Extensions;");
             content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
+            content.AppendLine("using Best.Practices.Core.Application.UseCases;");
             content.AppendLine("");
-            content.Append(GetNameSpace(fileContent));
+            content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "UpdateUseCase");
+            var newClassName = string.Concat("Update", originalClassName, "UseCase");
 
             content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : CommandUseCase<Update{originalClassName}Input, {originalClassName}Output>"));
 
@@ -68,7 +70,7 @@ namespace BestPracticesCodeGenerator
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Create{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
+            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Update{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_validator = validator;");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
@@ -78,7 +80,7 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tpublic async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Update{className}Input input)");
+            content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Update{className}Input input)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_validator.ValidateAndThrow(input);");
             content.AppendLine("");
@@ -94,15 +96,23 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly IValidator<Create{originalClassName}Input> _validator;");
+            content.AppendLine($"\t\tprivate readonly IValidator<Update{originalClassName}Input> _validator;");
             content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
             content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while creating the application.\";");
         }
 
-        private static string GetNameSpace(string fileContent)
+        private static string GetNameSpace(string filePath)
         {
-            return fileContent.Substring(fileContent.IndexOf("namespace"), fileContent.IndexOf("{"));
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            var solutionPath = Path.GetDirectoryName(solution.FullPath);
+
+            var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+
+            return "namespace " + namespacePath;
         }
 
         private static string GetUsings(string fileContent)

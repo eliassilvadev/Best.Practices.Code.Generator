@@ -1,15 +1,16 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class InputValidatorFactory
+    public static class UpdateInputValidatorFactory
     {
-        public static string Create(string fileContent)
+        public static string Create(string fileContent, string filePath)
         {
             Validate(fileContent);
 
@@ -20,10 +21,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, properties);
+            return CreateRepositoryClass(fileContent, originalClassName, properties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -31,16 +32,16 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using using Best.Practices.Core.Extensions;");
+            content.AppendLine("using Best.Practices.Core.Extensions;");
             content.AppendLine("using FluentValidation;");
             content.AppendLine("");
-            content.Append(GetNameSpace(fileContent));
+            content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "InputValidator");
+            var newClassName = string.Concat("Update", originalClassName, "InputValidator");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : AbstractValidator<{originalClassName}Input>"));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : AbstractValidator<Update{originalClassName}Input>"));
 
             content.AppendLine("\t{");
 
@@ -77,9 +78,17 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
         }
 
-        private static string GetNameSpace(string fileContent)
+        private static string GetNameSpace(string filePath)
         {
-            return fileContent.Substring(fileContent.IndexOf("namespace"), fileContent.IndexOf("{"));
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            var solutionPath = Path.GetDirectoryName(solution.FullPath);
+
+            var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+
+            return "namespace " + namespacePath;
         }
 
         private static string GetUsings(string fileContent)

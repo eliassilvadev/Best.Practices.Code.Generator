@@ -2,6 +2,7 @@
 using BestPracticesCodeGenerator.Exceptions;
 using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace BestPracticesCodeGenerator
 {
     public static class RepositoryFactory
     {
-        public static string Create(string fileContent)
+        public static string Create(string fileContent, string filePath)
         {
             Validate(fileContent);
 
@@ -21,10 +22,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, properties);
+            return CreateRepositoryClass(fileContent, originalClassName, properties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -32,7 +33,9 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.Append(GetNameSpace(fileContent));
+            content.Append("using Best.Practices.Core.Domain.Repositories;");
+            content.AppendLine("");
+            content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
@@ -88,9 +91,17 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tprivate readonly I{originalClassName}CqrsCommandProvider _{originalClassName.GetWordWithFirstLetterDown()}CqrsCommandProvider;");
         }
 
-        private static string GetNameSpace(string fileContent)
+        private static string GetNameSpace(string filePath)
         {
-            return fileContent.Substring(fileContent.IndexOf("namespace"), fileContent.IndexOf("{"));
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            var solutionPath = Path.GetDirectoryName(solution.FullPath);
+
+            var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+
+            return "namespace " + namespacePath;
         }
 
         private static string GetUsings(string fileContent)

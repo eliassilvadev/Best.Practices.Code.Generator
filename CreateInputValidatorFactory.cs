@@ -1,6 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
-using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class OutputBuilderFactory
+    public static class CreateInputValidatorFactory
     {
         public static string Create(string fileContent, string filePath)
         {
@@ -22,10 +21,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateBuilderClass(fileContent, originalClassName, properties, filePath);
+            return CreateRepositoryClass(fileContent, originalClassName, properties, filePath);
         }
 
-        private static string CreateBuilderClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -33,23 +32,20 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
+            content.AppendLine("using Best.Practices.Core.Extensions;");
+            content.AppendLine("using FluentValidation;");
+            content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "OutputBuilder");
+            var newClassName = string.Concat("Create", originalClassName, "InputValidator");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName, $" : AbstractValidator<Create{originalClassName}Input>"));
 
             content.AppendLine("\t{");
 
-            GeneratePrivateVariables(content, properties);
-
-            GenerateBuilderConstructor(content, newClassName);
-
-            GenerateMethodsToSetValues(content, newClassName, properties);
-
-            GenerateMethodBuild(content, originalClassName, properties);
+            GenerateRepositoryConstructor(content, originalClassName, newClassName, properties);
 
             content.AppendLine("\t}");
 
@@ -64,52 +60,22 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateMethodBuild(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
+        private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tpublic {originalClassName}Output Build()");
+            content.AppendLine();
+            content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\treturn new {originalClassName}Output");
-            content.AppendLine("\t\t\t{");
 
-            for (int i = 0; i < properties.Count; i++)
+            foreach (var item in properties)
             {
-                var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
-                if (i + 1 != properties.Count)
-                    setValue = string.Concat(setValue, ",");
-
-                content.AppendLine(setValue);
+                content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
+                content.AppendLine($"\t\t\t\t.NotEmpty()");
+                content.AppendLine($"\t\t\t\t.WithMessage(v => Constants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
+                content.AppendLine("");
             }
 
-            content.AppendLine("\t\t\t};");
             content.AppendLine("\t\t}");
-        }
-
-        private static void GenerateBuilderConstructor(StringBuilder content, string newClassName)
-        {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}()" + " { }");
-            content.AppendLine();
-        }
-
-        private static void GenerateMethodsToSetValues(StringBuilder content, string className, IList<PropertyInfo> properties)
-        {
-            foreach (var item in properties)
-            {
-                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
-                content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
-                content.AppendLine("\t\t\treturn this;");
-                content.AppendLine("\t\t}");
-                content.AppendLine();
-            }
-        }
-
-        private static void GeneratePrivateVariables(StringBuilder content, IList<PropertyInfo> properties)
-        {
-            foreach (var item in properties)
-            {
-                content.AppendLine($"\t\tprivate {item.Type} _{item.Name.GetWordWithFirstLetterDown()};");
-            }
         }
 
         private static string GetNameSpace(string filePath)

@@ -2,6 +2,7 @@
 using BestPracticesCodeGenerator.Exceptions;
 using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace BestPracticesCodeGenerator
 {
     public static class DeleteUseCaseTestsFactory
     {
-        public static string Create(string fileContent)
+        public static string Create(string fileContent, string filePath)
         {
             Validate(fileContent);
 
@@ -21,10 +22,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseTestsClass(fileContent, originalClassName, properties);
+            return CreateUseCaseTestsClass(fileContent, originalClassName, properties, filePath);
         }
 
-        private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties)
+        private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -40,11 +41,11 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using Xunit;");
 
             content.AppendLine("");
-            content.Append(GetNameSpace(fileContent));
+            content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "DeleteUseCaseTests");
+            var newClassName = string.Concat("Delete", originalClassName, "UseCaseTests");
 
             content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
@@ -77,8 +78,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\t_unitOfWork = new Mock<IUnitOfWork>();");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = new Mock<I{originalClassName}Repository>();");
             content.AppendLine($"\t\t\t_useCase = new Delete{originalClassName}UseCase(_{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
-            content.AppendLine("");
-            content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
@@ -100,15 +99,23 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly {originalClassName}DeleteUseCase _useCase;");
+            content.AppendLine($"\t\tprivate readonly Delete{originalClassName}UseCase _useCase;");
             content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
         }
 
-        private static string GetNameSpace(string fileContent)
+        private static string GetNameSpace(string filePath)
         {
-            return fileContent.Substring(fileContent.IndexOf("namespace"), fileContent.IndexOf("{"));
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            var solutionPath = Path.GetDirectoryName(solution.FullPath);
+
+            var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+
+            return "namespace " + namespacePath;
         }
 
         private static string GetUsings(string fileContent)

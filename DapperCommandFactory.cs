@@ -1,4 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Exceptions;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,16 +7,16 @@ namespace BestPracticesCodeGenerator
 {
     public static class DapperCommandFactory
     {
-        public static string Create(string fileContent)
+        public static string Create(string fileContent, string filePath)
         {
             Validate(fileContent);
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName);
+            return CreateRepositoryClass(fileContent, originalClassName, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName)
+        private static string CreateRepositoryClass(string fileContent, string originalClassName, string filePath)
         {
             var content = new StringBuilder();
 
@@ -25,9 +26,10 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("using Dapper;");
             content.AppendLine("using MySql.Data.MySqlClient;");
+            content.AppendLine("using Best.Practices.Core.CommandProvider.Dapper.EntityCommands;");
             content.AppendLine("");
 
-            content.Append(GetNameSpace(fileContent));
+            content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
@@ -57,7 +59,7 @@ namespace BestPracticesCodeGenerator
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(MySqlConnection connection, {originalClassName} affectedEntity) : base(connection, affectedEntity)");
+            content.AppendLine($"\t\tpublic {newClassName}(IDbConnection connection, {originalClassName} affectedEntity) : base(connection, affectedEntity)");
             content.AppendLine("\t\t{");
             content.AppendLine($"");
             content.AppendLine("\t\t}");
@@ -75,9 +77,17 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
         }
 
-        private static string GetNameSpace(string fileContent)
+        private static string GetNameSpace(string filePath)
         {
-            return fileContent.Substring(fileContent.IndexOf("namespace"), fileContent.IndexOf("{"));
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            var solutionPath = Path.GetDirectoryName(solution.FullPath);
+
+            var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+
+            return "namespace " + namespacePath;
         }
 
         private static string GetUsings(string fileContent)
