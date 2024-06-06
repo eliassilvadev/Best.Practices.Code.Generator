@@ -8,55 +8,89 @@
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow"> 
+             Name="MyToolWindow">
+    <UserControl.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#1E1E1E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="#2D2D30"/>
+            <Setter Property="AlternatingRowBackground" Value="#353535"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#1E1E1E"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="91*"/>
+                <RowDefinition Height="9*"/>
+            </Grid.RowDefinitions>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="91*"/>
-            <RowDefinition Height="9*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Name="PNL_GenerateClasses" Orientation="Vertical" Grid.RowSpan="2"  Margin="0,50,0,0" Visibility="Hidden">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Use cases to generate" Margin="10,0,0,0"/>
-                <CheckBox Name="SEL_GenerateCreateUseCase" Content="CreateUseCase" IsChecked="False" Margin="10,0,0,0" >
-                    <CheckBox.Style>
-                        <Style TargetType="{x:Type CheckBox}">
-                            <Setter Property="Foreground" Value="White"/>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <CheckBox Name="SEL_GenerateUpdateUseCase" Content="UpdateUseCase" IsChecked="False" Margin="10,0,0,0" >
-                    <CheckBox.Style>
-                        <Style TargetType="{x:Type CheckBox}">
-                            <Setter Property="Foreground" Value="White"/>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <CheckBox Name="SEL_GenerateDeleteUseCase" Content="DeleteUseCase" IsChecked="False" Margin="10,0,0,0" >
-                    <CheckBox.Style>
-                        <Style TargetType="{x:Type CheckBox}">
-                            <Setter Property="Foreground" Value="White"/>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
+            <StackPanel Name="PNL_GenerateClasses" Orientation="Vertical" Grid.RowSpan="2"  Margin="0,10,0,0" Visibility="Hidden" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Use cases to generate:" Margin="10,0,0,0"/>
+                    <CheckBox Name="SEL_GenerateCreateUseCase" Content="Create" IsChecked="False" Margin="10,0,0,0" >
+                        <CheckBox.Style>
+                            <Style TargetType="{x:Type CheckBox}">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <CheckBox Name="SEL_GenerateUpdateUseCase" Content="Update" IsChecked="False" Margin="10,0,0,0" >
+                        <CheckBox.Style>
+                            <Style TargetType="{x:Type CheckBox}">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <CheckBox Name="SEL_GenerateDeleteUseCase" Content="Delete" IsChecked="False" Margin="10,0,10,0" >
+                        <CheckBox.Style>
+                            <Style TargetType="{x:Type CheckBox}">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <StackPanel Orientation ="Horizontal" VerticalAlignment="Stretch">
+                        <Button Click="BTN_Generate_Click" Width="18" Height="18" Name="BTN_Generate" Margin="10,0,0,0" Background="Transparent"  BorderThickness="0" ToolTip="Generate classes" IsEnabled="False">
+                            <Image Source="Resources\generateFile.png" />
+                        </Button>
+                        <TextBlock Text="Generate" Margin="10,0,0,0"/>
+                        <Button Click="BTN_Reload_Click" Width="18" Height="18" Name="BTN_Reload" Margin="10,0,0,0" Background="Transparent"  BorderThickness="0" ToolTip="Reload type" IsEnabled="False">
+                            <Image Source="Resources\refresh.png" />
+                        </Button>
+                        <TextBlock Text="Reload" Margin="10,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Grid.RowSpan="2" Margin="0,0,0,0">
+                    <TextBlock Name="LBL_ClassProperties" FontSize="14" FontWeight="Bold" Text="Class properties" HorizontalAlignment="Center" />
+                    <DataGrid Name="GRD_Properties" >
+                    </DataGrid>
+                </StackPanel>
             </StackPanel>
-
-            <StackPanel Orientation="Vertical" Grid.RowSpan="2" Margin="0,0,0,0">
-                <TextBlock Text="Class properties" HorizontalAlignment="Center" />
-                <DataGrid Name="GRD_Properties" >
-                </DataGrid>
-            </StackPanel>
-
-            <Button Content="Generate" Click="BTN_Generate_Click" Width="120" Height="30" Name="BTN_Generate" Margin="0,0,0,0" IsEnabled="False"/>
-            <Button Content="Reload" Click="BTN_Reload_Click" Width="120" Height="30" Name="BTN_Reload" Margin="0,0,0,0" IsEnabled="False"/>
-        </StackPanel>
+        </Grid>
         <StackPanel Name="PNL_InstructionsToLoadClass" Visibility="Visible"   HorizontalAlignment="Center"  VerticalAlignment="Center">
             <TextBlock
-                Text="To generate classes of DDD layers from a model, right click on an entity class and select 'Generate Best.Practices code'"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                TextAlignment="Center"
-                FontSize="14"/>
+            Text="To generate classes of DDD layers from a model, right click on an entity class in solution explorer and select 'Generate Best.Practices code'"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            TextAlignment="Center"
+            FontSize="14"/>
         </StackPanel>
-    </Grid>
+    </StackPanel>
+    
 </UserControl>

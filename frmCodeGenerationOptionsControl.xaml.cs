@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
+
 namespace BestPracticesCodeGenerator
 {
     /// <summary>
@@ -255,16 +256,65 @@ namespace BestPracticesCodeGenerator
             return (repositoryInterfaceFolder is not null) ? repositoryInterfaceFolder.FullPath : originalFilePath;
         }
 
-        private async Task GenerateCreateUseCaseAsync()
+        private void GenerateCreateUseCaseAsync()
         {
+            var newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "Input.cs");
+            var filePath = GetInputDtoPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
+
+            newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
+            filePath = GetInputValidatorPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
+
+            newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
+            filePath = GetInputBuilderPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+
+
+            newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
+            filePath = GetUseCasesPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+
+
+            newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
+            filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
         }
 
-        private async Task GenerateUpdateUseCaseAsync()
+        private void GenerateUpdateUseCaseAsync()
         {
+            var filePath = GetInputDtoPath(Solution, OriginalFilePath);
+            var newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "Input.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
+
+
+            filePath = GetInputValidatorPath(Solution, OriginalFilePath);
+            newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
+
+            newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
+            filePath = GetInputBuilderPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+
+            newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
+            filePath = GetUseCasesPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
+            newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
+
         }
 
-        private async Task GenerateDeleteUseCaseAsync()
+        private void GenerateDeleteUseCaseAsync()
         {
+            var newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
+            var filePath = GetUseCasesPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
+            newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
         }
 
         private async Task GenerateAsync()
@@ -302,70 +352,17 @@ namespace BestPracticesCodeGenerator
 
             if (SEL_GenerateCreateUseCase.IsChecked.Value)
             {
-                newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "Input.cs");
-                filePath = GetInputDtoPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
-
-                newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
-                filePath = GetInputValidatorPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
-
-                newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
-                filePath = GetInputBuilderPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
-
-
-                newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
-                filePath = GetUseCasesPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
-
-
-                newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
-                filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
-
-                await GenerateCreateUseCaseAsync();
+                GenerateCreateUseCaseAsync();
             }
 
             if (SEL_GenerateUpdateUseCase.IsChecked.Value)
             {
-                filePath = GetInputDtoPath(Solution, OriginalFilePath);
-                newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "Input.cs");
-                File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
-
-
-                filePath = GetInputValidatorPath(Solution, OriginalFilePath);
-                newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
-                File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
-
-                newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
-                filePath = GetInputBuilderPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
-
-                newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
-                filePath = GetUseCasesPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
-
-
-                filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
-                newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
-                File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
-
-                await GenerateUpdateUseCaseAsync();
+                GenerateUpdateUseCaseAsync();
             }
 
             if (SEL_GenerateDeleteUseCase.IsChecked.Value)
             {
-                newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
-                filePath = GetUseCasesPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseFactory.Create(FileContent, ClassProperties, filePath));
-
-
-                newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
-                File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
-
-                await GenerateDeleteUseCaseAsync();
-
+                GenerateDeleteUseCaseAsync();
             }
 
             if ((SEL_GenerateCreateUseCase.IsChecked.Value) || SEL_GenerateUpdateUseCase.IsChecked.Value || SEL_GenerateDeleteUseCase.IsChecked.Value)
@@ -408,6 +405,7 @@ namespace BestPracticesCodeGenerator
             this.ClassProperties = GetPropertiesInfo();
             GRD_Properties.ItemsSource = this.ClassProperties;
             BTN_Generate.IsEnabled = true;
+            LBL_ClassProperties.Text = "Properties from " + FileName.Replace(":", "").Replace(".cs", "");
         }
     }
 }

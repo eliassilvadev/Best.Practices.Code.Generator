@@ -98,12 +98,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\refresh.png" />
+    <Resource Include="Resources\save.png" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
       <Generator>VsixManifestGenerator</Generator>
       <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
     <Content Include="Resources\frmCodeGenerationOptionsCommand.png" />
+    <Resource Include="Resources\generatefile.png" />
     <Content Include="Resources\Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

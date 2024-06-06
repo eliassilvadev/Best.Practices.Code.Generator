@@ -39,6 +39,7 @@ namespace BestPracticesCodeGenerator
             frm.BTN_Reload.IsEnabled = true;
             frm.PNL_InstructionsToLoadClass.Visibility = System.Windows.Visibility.Hidden;
             frm.PNL_GenerateClasses.Visibility = System.Windows.Visibility.Visible;
+            frm.LBL_ClassProperties.Text = "Properties from " + frm.FileName.Replace(":", "").Replace(".cs", "");
 
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
