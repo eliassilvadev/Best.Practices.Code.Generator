@@ -30,6 +30,7 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
+            content.AppendLine($"using System.Text.Json.Serialization;");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
@@ -57,6 +58,14 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePublicVariables(StringBuilder content, IList<PropertyInfo> properties)
         {
+
+            if (!properties.Any(p => p.Name.Equals("Id")))
+            {
+                content.AppendLine("\t\t[JsonIgnore]");
+
+                content.AppendLine(string.Concat($"\t\tpublic Guid? Id", " { get; set; }"));
+            }
+
             foreach (var item in properties)
             {
                 if (item.Name.Equals("Id"))
@@ -79,6 +88,13 @@ namespace BestPracticesCodeGenerator
             return "namespace " + namespacePath;
         }
 
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
+        }
+
         private static string GetUsings(string fileContent)
         {
             return fileContent.Substring(0, fileContent.IndexOf("namespace"));
@@ -88,7 +104,7 @@ namespace BestPracticesCodeGenerator
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
-            return regex.Groups["Name"].Value;
+            return regex.Groups["Name"].Value.Replace(":", "");
         }
 
         private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)

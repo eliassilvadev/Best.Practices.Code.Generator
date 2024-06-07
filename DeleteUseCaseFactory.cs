@@ -31,9 +31,11 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using FluentValidation;");
             content.AppendLine("using Best.Practices.Core.Extensions;");
+            content.AppendLine("using Best.Practices.Core.Application.UseCases;");
             content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -78,7 +80,6 @@ namespace BestPracticesCodeGenerator
         {
             content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<bool>> InternalExecuteAsync(Guid {className.GetWordWithFirstLetterDown()}Id)");
             content.AppendLine("\t\t{");
-            content.AppendLine("");
             content.AppendLine($"\t\t\tvar previous{className} = _{className.GetWordWithFirstLetterDown()}Repository.GetById({className.GetWordWithFirstLetterDown()}Id).Result");
             content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
             content.AppendLine("");
@@ -88,7 +89,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("");
             content.AppendLine($"\t\t\t return CreateSuccessOutput(true);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
@@ -111,6 +111,13 @@ namespace BestPracticesCodeGenerator
             return "namespace " + namespacePath;
         }
 
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
+        }
+
         private static string GetUsings(string fileContent)
         {
             return fileContent.Substring(0, fileContent.IndexOf("namespace"));
@@ -120,7 +127,7 @@ namespace BestPracticesCodeGenerator
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
-            return regex.Groups["Name"].Value;
+            return regex.Groups["Name"].Value.Replace(":", "");
         }
 
         private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)

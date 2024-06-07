@@ -37,6 +37,8 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -120,6 +122,13 @@ namespace BestPracticesCodeGenerator
             return "namespace " + namespacePath;
         }
 
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
+        }
+
         private static string GetUsings(string fileContent)
         {
             return fileContent.Substring(0, fileContent.IndexOf("namespace"));
@@ -129,7 +138,7 @@ namespace BestPracticesCodeGenerator
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
-            return regex.Groups["Name"].Value;
+            return regex.Groups["Name"].Value.Replace(":", "");
         }
 
         private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)

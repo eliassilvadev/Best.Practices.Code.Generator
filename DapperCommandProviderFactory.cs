@@ -37,6 +37,9 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
             content.AppendLine("using MySql.Data.MySqlClient;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.CommandProvider.Dapper.EntityCommands;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -144,6 +147,13 @@ namespace BestPracticesCodeGenerator
             return "namespace " + namespacePath;
         }
 
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
+        }
+
         private static string GetUsings(string fileContent)
         {
             return fileContent.Substring(0, fileContent.IndexOf("namespace"));
@@ -153,7 +163,7 @@ namespace BestPracticesCodeGenerator
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
-            return regex.Groups["Name"].Value;
+            return regex.Groups["Name"].Value.Replace(":", "");
         }
 
         private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
