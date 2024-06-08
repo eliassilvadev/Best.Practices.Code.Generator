@@ -1,5 +1,6 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
+using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,8 +26,6 @@ namespace BestPracticesCodeGenerator
         private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
-
-            content.Append(GetUsings(fileContent));
 
             fileContent = fileContent.Substring(content.Length);
 
@@ -58,6 +57,8 @@ namespace BestPracticesCodeGenerator
 
             GenerateDapperCqrsCommandProviderMethodsImplementation(content, originalClassName);
 
+            GenerateMethodsToGetEntity(content, originalClassName, newClassName, properties);
+
             content.AppendLine("\t}");
 
             content.AppendLine("}");
@@ -78,6 +79,27 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t{");
             content.AppendLine("\t\t}");
             content.AppendLine();
+        }
+
+        private static void GenerateMethodsToGetEntity(StringBuilder content, string originalClassName, string className, IList<PropertyInfo> properties)
+        {
+            foreach (var item in properties)
+            {
+                content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
+                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"a.{item.Name} = @{item.Name};\";");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tparameters.Add(\"@{item.Name}\", {item.Name.GetWordWithFirstLetterDown()});");
+                content.AppendLine();
+                content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
         }
 
         private static void GenerateDapperCqrsCommandProviderMethodsImplementation(StringBuilder content, string originalClassName)

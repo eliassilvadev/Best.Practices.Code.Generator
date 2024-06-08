@@ -40,10 +40,6 @@ namespace BestPracticesCodeGenerator
         private void BTN_Generate_Click(object sender, RoutedEventArgs e)
         {
             GenerateAsync().Wait();
-
-            System.Windows.MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", this.ToString()),
-                "frmCodeGenerationOptions");
         }
 
         private string GetDapperCommandProviderPath(Solution solution, string originalFilePath)
@@ -270,6 +266,9 @@ namespace BestPracticesCodeGenerator
             filePath = GetInputBuilderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
 
+            newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
+            filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
             filePath = GetUseCasesPath(Solution, OriginalFilePath);
@@ -291,6 +290,11 @@ namespace BestPracticesCodeGenerator
             filePath = GetInputValidatorPath(Solution, OriginalFilePath);
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
+
+            newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
+            filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
+
 
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
             filePath = GetInputBuilderPath(Solution, OriginalFilePath);
@@ -375,10 +379,6 @@ namespace BestPracticesCodeGenerator
                 filePath = GetOutputBuilderPath(Solution, OriginalFilePath);
                 File.WriteAllText(Path.Combine(filePath, newFileName), OutputBuilderFactory.Create(FileContent, ClassProperties, filePath));
             }
-
-            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
-            filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
-            File.WriteAllText(Path.Combine(filePath, newFileName), InputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
         }

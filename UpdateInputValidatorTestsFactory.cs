@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class InputValidatorTestsFactory
+    public static class UpdateInputValidatorTestsFactory
     {
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
@@ -26,22 +26,20 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Common;");
-            content.AppendLine("using Best.Practices.Core.Extensions;");
-            content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Xunit;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "InputValidatorTests");
+            var newClassName = string.Concat("Update", originalClassName, "InputValidatorTests");
 
             content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
@@ -71,18 +69,20 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_validator = new {originalClassName}InputValidator();");
+            content.AppendLine($"\t\t\t_validator = new Update{originalClassName}InputValidator();");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
+            var firstProperty = properties.First();
+
             content.AppendLine("\t\t[Fact]");
             content.AppendLine($"\t\tpublic void Execute_InputIsValid_ReturnsIsValid()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\tvar input = new {className}InputBuilder()");
-            content.AppendLine($"\t\t\t\t.WithSampleProperty(\"Sample property Test\")");
+            content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
+            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
@@ -96,7 +96,7 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("\t\t[Fact]");
                 content.AppendLine($"\t\tpublic void Execute_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\tvar input = new {className}InputBuilder()");
+                content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
                 content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
@@ -110,7 +110,7 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly {originalClassName}InputValidator _validator;");
+            content.AppendLine($"\t\tprivate readonly Update{originalClassName}InputValidator _validator;");
             content.AppendLine($"");
         }
 

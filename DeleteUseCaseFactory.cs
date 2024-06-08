@@ -27,8 +27,6 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Extensions;");
@@ -95,7 +93,7 @@ namespace BestPracticesCodeGenerator
         {
             content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
-            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while deleting the {originalClassName}.\";");
+            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while deleting the {originalClassName.GetWordWithFirstLetterDown()}.\";");
         }
 
         private static string GetNameSpace(string filePath)

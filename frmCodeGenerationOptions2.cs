@@ -357,7 +357,7 @@ namespace BestPracticesCodeGenerator
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
             filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
-            File.WriteAllText(Path.Combine(filePath, newFileName), InputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
+            File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
         }

@@ -27,8 +27,6 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using FluentValidation;");
@@ -39,6 +37,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
@@ -102,7 +101,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tprivate readonly IValidator<Update{originalClassName}Input> _validator;");
             content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine($"");
-            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while creating the application.\";");
+            content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while updating the {originalClassName.GetWordWithFirstLetterDown()}.\";");
         }
 
         private static string GetNameSpace(string filePath)

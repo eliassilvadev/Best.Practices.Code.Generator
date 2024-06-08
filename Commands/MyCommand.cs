@@ -29,6 +29,12 @@ namespace BestPracticesCodeGenerator
             frm.OriginalFileName = doc.FilePath;
             frm.FileContent = File.ReadAllText(frm.OriginalFileName);
 
+            if (!frm.FileContent.Contains("BaseEntity"))
+            {
+                await VS.MessageBox.ShowWarningAsync("MyCommand", "Selected class must inherit from 'BaseEntity'");
+                return;
+            }
+
             frm.OriginalFilePath = Path.GetDirectoryName(frm.OriginalFileName);
             frm.FileName = Path.GetFileName(frm.OriginalFileName);
 

@@ -27,8 +27,6 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Domain.Repositories.Interfaces;");

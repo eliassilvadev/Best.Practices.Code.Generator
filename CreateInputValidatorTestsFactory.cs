@@ -1,6 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
-using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class UpdateUseCaseTestsFactory
+    public static class CreateInputValidatorTestsFactory
     {
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
@@ -30,23 +29,17 @@ namespace BestPracticesCodeGenerator
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Common;");
-            content.AppendLine("using Best.Practices.Core.Extensions;");
-            content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
-            content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
-            content.AppendLine($"using FluentValidation;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat("Update", originalClassName, "UseCaseTests");
+            var newClassName = string.Concat("Create", originalClassName, "InputValidatorTests");
 
             content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
@@ -76,10 +69,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_unitOfWork = new Mock<IUnitOfWork>();");
-            content.AppendLine($"\t\t\t_validator = new Mock<IValidator<Update{originalClassName}Input>>();");
-            content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = new Mock<I{originalClassName}Repository>();");
-            content.AppendLine($"\t\t\t_useCase = new Update{originalClassName}UseCase(_validator.Object, _{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
+            content.AppendLine($"\t\t\t_validator = new Create{originalClassName}InputValidator();");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
@@ -89,26 +79,38 @@ namespace BestPracticesCodeGenerator
             var firstProperty = properties.First();
 
             content.AppendLine("\t\t[Fact]");
-            content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
+            content.AppendLine($"\t\tpublic void Execute_InputIsValid_ReturnsIsValid()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
+            content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
             content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
-            content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
+            content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
             content.AppendLine("");
-            content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
-            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
+            content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeTrue();");
             content.AppendLine("\t\t}");
             content.AppendLine();
+
+            foreach (PropertyInfo property in properties)
+            {
+                content.AppendLine("\t\t[Fact]");
+                content.AppendLine($"\t\tpublic void Execute_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
+                content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine("");
+                content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
+                content.AppendLine("");
+                content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly Update{originalClassName}UseCase _useCase;");
-            content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
-            content.AppendLine($"\t\tprivate readonly Mock<IValidator<Update{originalClassName}Input>> _validator;");
-            content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
+            content.AppendLine($"\t\tprivate readonly Create{originalClassName}InputValidator _validator;");
             content.AppendLine($"");
         }
 

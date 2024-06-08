@@ -27,8 +27,6 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Common;");
@@ -39,7 +37,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

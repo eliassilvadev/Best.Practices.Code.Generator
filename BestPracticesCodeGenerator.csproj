@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
     <Compile Include="frmCodeGenerationOptions2.cs">
       <SubType>Form</SubType>
@@ -63,7 +64,7 @@
     <Compile Include="DapperCommandProviderFactory.cs" />
     <Compile Include="UpdateInputBuilderFactory.cs" />
     <Compile Include="CreateInputBuilderFactory.cs" />
-    <Compile Include="InputValidatorTestsFactory.cs" />
+    <Compile Include="CreateInputValidatorTestsFactory.cs" />
     <Compile Include="CreateInputValidatorFactory.cs" />
     <Compile Include="DapperTableDefinitionFactory.cs" />
     <Compile Include="DeleteUseCaseFactory.cs" />

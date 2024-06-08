@@ -26,8 +26,6 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.CommandProvider.Dapper.CommandProviders;");
@@ -72,14 +70,33 @@ namespace BestPracticesCodeGenerator
             foreach (var item in properties)
             {
                 content.AppendLine("\t\t\t\tnew DapperTableColumnDefinition");
-                content.AppendLine("\t\t\t\t\t{");
-                content.AppendLine($"\t\t\t\t\t\tDbFieldName = \"{item.Name}\",");
-                content.AppendLine($"\t\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
-                content.AppendLine($"\t\t\t\t\t\tType = DbType.{item.Type}");
-                content.AppendLine("\t\t\t\t\t},");
+                content.AppendLine("\t\t\t\t{");
+                content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}\",");
+                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
+                content.AppendLine($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
+                content.AppendLine("\t\t\t\t},");
             }
             content.AppendLine("\t\t\t}");
             content.AppendLine("\t\t};");
+        }
+
+        private static object GetDbTypeName(string type)
+        {
+            return type switch
+            {
+                "string" => "AnsiString",
+                "int" => "Int32",
+                "int?" => "Int32",
+                "DateTime" => "DateTime",
+                "DateTime?" => "DateTime",
+                "decimal" => "Decimal",
+                "decimal?" => "Decimal",
+                "bool" => "Boolean",
+                "bool?" => "Boolean",
+                "Guid" => "Guid",
+                "Guid?" => "Guid",
+                _ => "AnsiString",
+            };
         }
 
         private static string GetNameSpace(string filePath)

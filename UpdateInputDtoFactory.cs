@@ -26,11 +26,10 @@ namespace BestPracticesCodeGenerator
         {
             var content = new StringBuilder();
 
-            content.Append(GetUsings(fileContent));
-
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine($"using System.Text.Json.Serialization;");
+            content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
