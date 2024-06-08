@@ -126,7 +126,7 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
                 content.AppendLine("");
                 content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
-                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists));");
+                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
                 content.AppendLine("\t\t}");
                 content.AppendLine();
             }
