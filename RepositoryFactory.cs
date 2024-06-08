@@ -75,11 +75,31 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateMethodsToGetEntity(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            foreach (var item in properties)
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+
+            foreach (var property in propertiesToPreventDuplication)
             {
-                content.AppendLine($"\t\tpublic async Task<{className}> Get{className}By{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine($"\t\tpublic async Task<{className}> Get{className}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t return HandleAfterGetFromCommandProvider(await _{className.GetWordWithFirstLetterDown()}CqrsCommandProvider.Get{className}By{item.Name}({item.Name.GetWordWithFirstLetterDown()}));");
+                content.AppendLine($"\t\t\t return HandleAfterGetFromCommandProvider(await _{className.GetWordWithFirstLetterDown()}CqrsCommandProvider.Get{className}By{property.Name}({property.Name.GetWordWithFirstLetterDown()}));");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+                content.AppendLine($"\t\tpublic async Task<{className}> GetAnother{className}By{property.Name}({className} {className.GetWordWithFirstLetterDown()},{property.Type} {property.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\t return HandleAfterGetFromCommandProvider(await _{className.GetWordWithFirstLetterDown()}CqrsCommandProvider.GetAnother{className}By{property.Name}({className.GetWordWithFirstLetterDown()}, {property.Name.GetWordWithFirstLetterDown()}));");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
+
+            var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository)
+                .Except(propertiesToPreventDuplication)
+                .ToList();
+
+            foreach (var property in propertiesToCreateGetMethod)
+            {
+                content.AppendLine($"\t\tpublic async Task<{className}> Get{className}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\t return HandleAfterGetFromCommandProvider(await _{className.GetWordWithFirstLetterDown()}CqrsCommandProvider.Get{className}By{property.Name}({property.Name.GetWordWithFirstLetterDown()}));");
                 content.AppendLine("\t\t}");
                 content.AppendLine();
             }

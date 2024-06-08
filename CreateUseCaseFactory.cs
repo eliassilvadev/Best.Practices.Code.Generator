@@ -83,8 +83,18 @@ namespace BestPracticesCodeGenerator
         {
             content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Create{className}Input input)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t _validator.ValidateAndThrow(input);");
+            content.AppendLine($"\t\t\t_validator.ValidateAndThrow(input);");
             content.AppendLine("");
+
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+
+            foreach (var property in propertiesToPreventDuplication)
+            {
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Get{className}By{property.Name}(input.{property.Name}).Result");
+                content.AppendLine($"\t\t\t\t.ThrowInvalidInputIfIsNotNull(Constants.ErrorMessages.A{className}With{property.Name}AlreadyExists.Format(input.{property.Name}));");
+                content.AppendLine("");
+            }
+
             content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}();");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Persist({className.GetWordWithFirstLetterDown()}, UnitOfWork);");

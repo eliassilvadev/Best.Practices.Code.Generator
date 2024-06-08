@@ -325,8 +325,12 @@ namespace BestPracticesCodeGenerator
         {
             var newFileName = "";
 
+            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Builder.cs");
+            var filePath = GetEntityBuilderPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), EntityBuilderFactory.Create(FileContent, ClassProperties, filePath));
+
             newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "Repository.cs");
-            var filePath = GetInterfaceRepositoryPath(Solution, OriginalFilePath);
+            filePath = GetInterfaceRepositoryPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), InterfaceRepositoryFactory.Create(FileContent, ClassProperties, filePath));
 
 
@@ -381,6 +385,23 @@ namespace BestPracticesCodeGenerator
             }
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
+        }
+
+        private string GetEntityBuilderPath(Solution solution, string originalFilePath)
+        {
+            var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
+                .FirstOrDefault();
+
+            var domainFolder = coreProject?.Children.Where(n => n.Text.Equals("Domain"))
+                .FirstOrDefault();
+
+            var modelsFolder = domainFolder?.Children.Where(n => n.Text.Equals("Models"))
+                .FirstOrDefault();
+
+            var buildersFolder = modelsFolder?.Children.Where(n => n.Text.Equals("Builders"))
+               .FirstOrDefault();
+
+            return (buildersFolder is not null) ? buildersFolder.FullPath : originalFilePath;
         }
 
         public IList<PropertyInfo> GetPropertiesInfo()

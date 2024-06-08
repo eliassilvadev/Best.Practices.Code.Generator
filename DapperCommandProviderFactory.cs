@@ -83,18 +83,57 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateMethodsToGetEntity(StringBuilder content, string originalClassName, string className, IList<PropertyInfo> properties)
         {
-            foreach (var item in properties)
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+
+            foreach (var property in propertiesToPreventDuplication)
             {
-                content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
                 content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
                 content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
-                content.AppendLine($"\t\t\t\t + \"a.{item.Name} = @{item.Name};\";");
+                content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name};\";");
                 content.AppendLine();
                 content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
                 content.AppendLine();
-                content.AppendLine($"\t\t\tparameters.Add(\"@{item.Name}\", {item.Name.GetWordWithFirstLetterDown()});");
+                content.AppendLine($"\t\t\tparameters.Add(\"@{property.Name}\", {property.Name.GetWordWithFirstLetterDown()});");
+                content.AppendLine();
+                content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+                content.AppendLine($"\t\tpublic async Task<{originalClassName}> GetAnother{originalClassName}By{property.Name}({originalClassName} {originalClassName.GetWordWithFirstLetterDown()}, {property.Type} {property.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
+                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name} and t.Id <> @Id\";");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tparameters.Add(\"@{property.Name}\", {property.Name.GetWordWithFirstLetterDown()});");
+                content.AppendLine($"\t\t\tparameters.Add(\"@Id\", {originalClassName.GetWordWithFirstLetterDown()}.Id);");
+                content.AppendLine();
+                content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
+
+            var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository)
+                .Except(propertiesToPreventDuplication)
+                .ToList();
+
+            foreach (var property in propertiesToCreateGetMethod)
+            {
+                content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
+                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name};\";");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
+                content.AppendLine();
+                content.AppendLine($"\t\t\tparameters.Add(\"@{property.Name}\", {property.Name.GetWordWithFirstLetterDown()});");
                 content.AppendLine();
                 content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
                 content.AppendLine("\t\t}");
@@ -127,7 +166,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
             content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
             content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
-            content.AppendLine($"\t\t\t\t + \"a.Id = @Id;\";");
+            content.AppendLine($"\t\t\t\t + \"t.Id = @Id;\";");
             content.AppendLine();
             content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
             content.AppendLine();

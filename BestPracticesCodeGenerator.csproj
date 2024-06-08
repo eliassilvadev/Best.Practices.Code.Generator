@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EntityBuilderFactory.cs" />
     <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
     <Compile Include="frmCodeGenerationOptions2.cs">

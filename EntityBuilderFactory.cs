@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class InterfaceRepositoryFactory
+    public static class EntityBuilderFactory
     {
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
@@ -20,29 +20,34 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryInterface(fileContent, originalClassName, classProperties, filePath);
+            return CreateBuilderClass(fileContent, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryInterface(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateBuilderClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using Best.Practices.Core.Domain.Repositories.Interfaces;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat("I", originalClassName, "Repository", $" : IRepository<{originalClassName}>");
+            var newClassName = string.Concat(originalClassName, "Builder");
 
-            content.AppendLine(string.Concat("\tpublic interface ", newClassName));
+            content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
             content.AppendLine("\t{");
 
-            GenerateMethodsToGetEntity(content, originalClassName, properties);
+            GeneratePrivateVariables(content, properties);
+
+            GenerateBuilderConstructor(content, newClassName);
+
+            GenerateMethodsToSetValues(content, newClassName, properties);
+
+            GenerateMethodBuild(content, originalClassName, properties);
 
             content.AppendLine("\t}");
 
@@ -57,25 +62,43 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateMethodsToGetEntity(StringBuilder content, string className, IList<PropertyInfo> properties)
+        private static void GenerateMethodBuild(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
         {
-            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+            content.AppendLine($"\t\tpublic {originalClassName} Build()");
+            content.AppendLine("\t\t{");
+            content.AppendLine($"\t\t\treturn new {originalClassName}");
+            content.AppendLine("\t\t\t{");
 
-            foreach (var property in propertiesToPreventDuplication)
+            for (int i = 0; i < properties.Count; i++)
             {
-                content.AppendLine($"\t\tTask<{className}> Get{className}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()});");
-                content.AppendLine("");
-                content.AppendLine($"\t\tTask<{className}> GetAnother{className}By{property.Name}({className} {className.GetWordWithFirstLetterDown()}, {property.Type} {property.Name.GetWordWithFirstLetterDown()});");
-                content.AppendLine("");
+                var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
+                if (i + 1 != properties.Count)
+                    setValue = string.Concat(setValue, ",");
+
+                content.AppendLine(setValue);
             }
 
-            var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository)
-                .Except(propertiesToPreventDuplication)
-                .ToList();
+            content.AppendLine("\t\t\t};");
+            content.AppendLine("\t\t}");
+        }
 
-            foreach (var property in propertiesToCreateGetMethod)
+        private static void GenerateBuilderConstructor(StringBuilder content, string newClassName)
+        {
+            content.AppendLine();
+            content.AppendLine($"\t\tpublic {newClassName}()" + " { }");
+            content.AppendLine();
+        }
+
+        private static void GenerateMethodsToSetValues(StringBuilder content, string className, IList<PropertyInfo> properties)
+        {
+            foreach (var item in properties)
             {
-                content.AppendLine($"\t\tTask<{className}> Get{className}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()});");
+                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
+                content.AppendLine("\t\t\treturn this;");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
             }
         }
 

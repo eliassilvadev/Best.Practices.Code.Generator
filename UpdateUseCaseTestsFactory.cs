@@ -39,6 +39,8 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Models.Builders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine($"using FluentValidation;");
 
             content.AppendLine("");
@@ -101,6 +103,33 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
             content.AppendLine("\t\t}");
             content.AppendLine();
+
+            var propertiesToPreventDuplication = properties
+                .Where(p => p.PreventDuplication)
+                .ToList();
+
+            foreach (var property in propertiesToPreventDuplication)
+            {
+                content.AppendLine("\t\t[Fact]");
+                content.AppendLine($"\t\tpublic async Task Execute_AlreadyExistsAnother{className}With{property.Name}_ReturnsInvalidInput()");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
+                content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine("");
+                content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}Builder()");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine("");
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetAnother{className}By{property.Name}({className.GetWordWithFirstLetterDown()}, input.{property.Name}))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync({className.GetWordWithFirstLetterDown()});");
+                content.AppendLine("");
+                content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
+                content.AppendLine("");
+                content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
+                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists));");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
