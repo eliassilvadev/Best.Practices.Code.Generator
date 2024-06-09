@@ -382,9 +382,24 @@ namespace BestPracticesCodeGenerator
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "OutputBuilder.cs");
                 filePath = GetOutputBuilderPath(Solution, OriginalFilePath);
                 File.WriteAllText(Path.Combine(filePath, newFileName), OutputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+
+                newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Controller.cs");
+                filePath = GetControllerPath(Solution, OriginalFilePath);
+                File.WriteAllText(Path.Combine(filePath, newFileName), ControllerFactory.Create(FileContent, ClassProperties, filePath, SEL_GenerateCreateUseCase.IsChecked.Value, SEL_GenerateUpdateUseCase.IsChecked.Value, SEL_GenerateDeleteUseCase.IsChecked.Value));
             }
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
+        }
+
+        private string GetControllerPath(Solution solution, string originalFilePath)
+        {
+            var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Presentation.AspNetCoreApi"))
+               .FirstOrDefault();
+
+            var controllersFolder = presentationProject?.Children.Where(n => n.Text.Equals("Controllers"))
+                .FirstOrDefault();
+
+            return (controllersFolder is not null) ? controllersFolder.FullPath : originalFilePath;
         }
 
         private string GetEntityBuilderPath(Solution solution, string originalFilePath)

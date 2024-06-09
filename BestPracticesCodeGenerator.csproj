@@ -70,6 +70,7 @@
     <Compile Include="DapperTableDefinitionFactory.cs" />
     <Compile Include="DeleteUseCaseFactory.cs" />
     <Compile Include="DeleteUseCaseTestsFactory.cs" />
+    <Compile Include="ControllerFactory.cs" />
     <Compile Include="UpdateUseCaseTestsFactory.cs" />
     <Compile Include="CreateUseCaseTestsFactory.cs" />
     <Compile Include="OutputDtoFactory.cs" />
