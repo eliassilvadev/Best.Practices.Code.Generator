@@ -1,19 +1,37 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
+﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 using System.IO;
-using System.Linq;
 
 namespace BestPracticesCodeGenerator
 {
     [Command(PackageIds.MyCommand)]
     internal sealed class MyCommand : BaseCommand<MyCommand>
     {
+        private DTE2 _dte;
+
+        public MyCommand()
+        {
+            _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
+        }
+
+        public string GetSelectedFileName()
+        {
+            var items = (Array)_dte.ToolWindows.SolutionExplorer.SelectedItems;
+            if (items != null && items.Length > 0)
+            {
+                UIHierarchyItem selItem = items.GetValue(0) as UIHierarchyItem;
+                if (selItem.Object is ProjectItem)
+                {
+                    ProjectItem projItem = selItem.Object as ProjectItem;
+                    return projItem.Properties.Item("FullPath").Value.ToString();
+                }
+            }
+            return null;
+        }
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            var doc = VS.Documents.GetActiveDocumentViewAsync().Result;
-
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
-
-            var span = doc.TextView.Selection.SelectedSpans.FirstOrDefault();
 
             var window = this.Package.FindToolWindow(typeof(frmCodeGenerationOptions), 0, true);
             if ((null == window) || (null == window.Frame))
@@ -26,7 +44,7 @@ namespace BestPracticesCodeGenerator
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
             frm.Solution = solution;
-            frm.OriginalFileName = doc.FilePath;
+            frm.OriginalFileName = GetSelectedFileName();// doc.FilePath;
             frm.FileContent = File.ReadAllText(frm.OriginalFileName);
 
             if (!frm.FileContent.Contains("BaseEntity"))

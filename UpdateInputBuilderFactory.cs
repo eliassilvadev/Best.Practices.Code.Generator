@@ -69,10 +69,18 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\treturn new Update{originalClassName}Input");
             content.AppendLine("\t\t\t{");
 
-            for (int i = 0; i < properties.Count; i++)
+            var propertiesToAdd = new List<PropertyInfo>();
+            propertiesToAdd.AddRange(properties);
+
+            if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
-                if (i + 1 != properties.Count)
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
+            }
+
+            for (int i = 0; i < propertiesToAdd.Count; i++)
+            {
+                var setValue = $"\t\t\t\t{propertiesToAdd[i].Name} = _{propertiesToAdd[i].Name.GetWordWithFirstLetterDown()}";
+                if (i + 1 != propertiesToAdd.Count)
                     setValue = string.Concat(setValue, ",");
 
                 content.AppendLine(setValue);
@@ -91,6 +99,16 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateMethodsToSetValues(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
+            if (!properties.Any(p => p.Name.Equals("Id")))
+            {
+                content.AppendLine($"\t\tpublic {className} WithId(Guid id)");
+                content.AppendLine("\t\t{");
+                content.AppendLine($"\t\t\t_id = id;");
+                content.AppendLine("\t\t\treturn this;");
+                content.AppendLine("\t\t}");
+                content.AppendLine();
+            }
+
             foreach (var item in properties)
             {
                 content.AppendLine($"\t\tpublic {className} With{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
@@ -104,6 +122,11 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePrivateVariables(StringBuilder content, IList<PropertyInfo> properties)
         {
+            if (!properties.Any(p => p.Name.Equals("Id")))
+            {
+                content.AppendLine($"\t\tprivate Guid _id;");
+            }
+
             foreach (var item in properties)
             {
                 content.AppendLine($"\t\tprivate {item.Type} _{item.Name.GetWordWithFirstLetterDown()};");

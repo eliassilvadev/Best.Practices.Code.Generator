@@ -55,6 +55,11 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePublicVariables(StringBuilder content, IList<PropertyInfo> properties)
         {
+            if (!properties.Any(p => p.Name.Equals("Id")))
+            {
+                content.AppendLine(string.Concat($"\t\tpublic Guid Id", " { get; set; }"));
+            }
+
             foreach (var item in properties)
             {
                 content.AppendLine(string.Concat($"\t\tpublic {item.Type} {item.Name}", " { get; init; }"));

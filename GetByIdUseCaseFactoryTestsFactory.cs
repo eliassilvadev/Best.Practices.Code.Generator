@@ -1,5 +1,6 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
+using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class UpdateInputValidatorTestsFactory
+    public static class GetByIdUseCaseFactoryTestsFactory
     {
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
@@ -29,17 +30,19 @@ namespace BestPracticesCodeGenerator
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using Best.Practices.Core.Common;");
+            content.AppendLine("using Best.Practices.Core.Extensions;");
+            content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
+            content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators;");
-
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat("Update", originalClassName, "InputValidatorTests");
+            var newClassName = string.Concat("Get", originalClassName, "ByIdUseCaseTests");
 
             content.AppendLine(string.Concat("\tpublic class ", newClassName));
 
@@ -69,56 +72,31 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\t_validator = new Update{originalClassName}InputValidator();");
+            content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}CqrsQueryProvider = new Mock<I{originalClassName}CqrsQueryProvider>();");
+            content.AppendLine($"\t\t\t_useCase = new Get{originalClassName}ByIdUseCase(_{originalClassName.GetWordWithFirstLetterDown()}CqrsQueryProvider.Object);");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
 
         private static void GenerateInternalExecuteMethod(StringBuilder content, string className, IList<PropertyInfo> properties)
         {
-            var firstProperty = properties.First();
-
             content.AppendLine("\t\t[Fact]");
-            content.AppendLine($"\t\tpublic void Validate_InputIsValid_ReturnsIsValid()");
+            content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
-            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
-            content.AppendLine($"\t\t\t\t.Build();");
+            content.AppendLine($"\t\t\tvar id = Guid.NewGuid();");
             content.AppendLine("");
-            content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
+            content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");
-            content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeTrue();");
+            content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Verify(x => x.GetById(id), Times.Once);");
             content.AppendLine("\t\t}");
             content.AppendLine();
-
-            var propertiesToAdd = new List<PropertyInfo>();
-            propertiesToAdd.AddRange(properties);
-
-            if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
-            {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
-            }
-
-            foreach (PropertyInfo property in propertiesToAdd)
-            {
-                content.AppendLine("\t\t[Fact]");
-                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
-                content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
-                content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
-                content.AppendLine($"\t\t\t\t.Build();");
-                content.AppendLine("");
-                content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
-                content.AppendLine("");
-                content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
-                content.AppendLine("\t\t}");
-                content.AppendLine();
-            }
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
-            content.AppendLine($"\t\tprivate readonly Update{originalClassName}InputValidator _validator;");
+            content.AppendLine($"\t\tprivate readonly Get{originalClassName}ByIdUseCase _useCase;");
+            content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}CqrsQueryProvider> _{originalClassName.GetWordWithFirstLetterDown()}CqrsQueryProvider;");
             content.AppendLine($"");
         }
 

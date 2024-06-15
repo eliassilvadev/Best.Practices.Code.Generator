@@ -45,7 +45,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DapperQueryProviderFactory.cs" />
+    <Compile Include="GetByIdUseCaseFactoryTestsFactory.cs" />
+    <Compile Include="GetByIdUseCaseFactory.cs" />
     <Compile Include="EntityBuilderFactory.cs" />
+    <Compile Include="InterfaceQueryProviderFactory.cs" />
     <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
     <Compile Include="frmCodeGenerationOptions2.cs">
@@ -71,6 +75,7 @@
     <Compile Include="DeleteUseCaseFactory.cs" />
     <Compile Include="DeleteUseCaseTestsFactory.cs" />
     <Compile Include="ControllerFactory.cs" />
+    <Compile Include="MigrationCreateTableFactory.cs" />
     <Compile Include="UpdateUseCaseTestsFactory.cs" />
     <Compile Include="CreateUseCaseTestsFactory.cs" />
     <Compile Include="OutputDtoFactory.cs" />

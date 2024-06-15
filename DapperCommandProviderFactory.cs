@@ -29,8 +29,8 @@ namespace BestPracticesCodeGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using Best.Practices.Core.CommandProvider.Dapper.CommandProviders;");
-            content.AppendLine("using Best.Practices.Core.CommandProvider.Dapper.Extensions;");
+            content.AppendLine("using Best.Practices.Core.Cqrs.Dapper.CommandProviders;");
+            content.AppendLine("using Best.Practices.Core.Cqrs.Dapper.Extensions;");
             content.AppendLine("using Best.Practices.Core.Common;");
             content.AppendLine("using Best.Practices.Core.Domain.Cqrs;");
             content.AppendLine("using Dapper;");
@@ -38,7 +38,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using MySql.Data.MySqlClient;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.CommandProvider.Dapper.EntityCommands;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Cqrs.Dapper.EntityCommands;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -179,7 +179,7 @@ namespace BestPracticesCodeGenerator
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
         {
-            content.AppendLine($"\t\tprivate readonly string SqlSelectCommand = @\"SELECT;");
+            content.AppendLine($"\t\tprivate readonly string SqlSelectCommand = @\"SELECT");
 
             int propertyIndex = 0;
 

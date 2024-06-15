@@ -1,5 +1,6 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
 using BestPracticesCodeGenerator.Exceptions;
+using BestPracticesCodeGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class DapperTableDefinitionFactory
+    public static class InterfaceQueryProviderFactory
     {
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
         {
@@ -19,30 +20,27 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateCommandProviderInterface(fileContent, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateCommandProviderInterface(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using Best.Practices.Core.Cqrs.Dapper.TableDefinitions;");
-            content.AppendLine("using System.Data;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine("using Best.Practices.Core.Application.Cqrs.QueryProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat(originalClassName, "TableDefinition");
+            var newClassName = string.Concat("I", originalClassName, "CqrsQueryProvider");
 
-            content.AppendLine(string.Concat("\tpublic class ", newClassName));
+            content.AppendLine(string.Concat("\tpublic interface ", newClassName, $" : ICqrsQueryProvider<{originalClassName}Output>"));
 
             content.AppendLine("\t{");
-
-            GenerateDapperDefinitionStaticProperty(content, originalClassName, properties);
 
             content.AppendLine("\t}");
 
@@ -57,46 +55,12 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateDapperDefinitionStaticProperty(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
+        private static void GeneratePrivateVariables(StringBuilder content, IList<PropertyInfo> properties)
         {
-            content.AppendLine();
-            content.AppendLine($"\t\tpublic static readonly DapperTableDefinition TableDefinition = new DapperTableDefinition");
-            content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\tTableName = \"{originalClassName}\",");
-            content.AppendLine($"\t\t\tColumnDefinitions = new List<DapperTableColumnDefinition>()");
-            content.AppendLine("\t\t\t{");
-
-
             foreach (var item in properties)
             {
-                content.AppendLine("\t\t\t\tnew DapperTableColumnDefinition");
-                content.AppendLine("\t\t\t\t{");
-                content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}\",");
-                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
-                content.AppendLine($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
-                content.AppendLine("\t\t\t\t},");
+                content.AppendLine($"\t\tprivate {item.Type} _{item.Name.GetWordWithFirstLetterDown()};");
             }
-            content.AppendLine("\t\t\t}");
-            content.AppendLine("\t\t};");
-        }
-
-        private static object GetDbTypeName(string type)
-        {
-            return type switch
-            {
-                "string" => "AnsiString",
-                "int" => "Int32",
-                "int?" => "Int32",
-                "DateTime" => "DateTime",
-                "DateTime?" => "DateTime",
-                "decimal" => "Decimal",
-                "decimal?" => "Decimal",
-                "bool" => "Boolean",
-                "bool?" => "Boolean",
-                "Guid" => "Guid",
-                "Guid?" => "Guid",
-                _ => "AnsiString",
-            };
         }
 
         private static string GetNameSpace(string filePath)

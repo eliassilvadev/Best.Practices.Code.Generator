@@ -79,7 +79,7 @@ namespace BestPracticesCodeGenerator
             var firstProperty = properties.First();
 
             content.AppendLine("\t\t[Fact]");
-            content.AppendLine($"\t\tpublic void Execute_InputIsValid_ReturnsIsValid()");
+            content.AppendLine($"\t\tpublic void Validate_InputIsValid_ReturnsIsValid()");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
             content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
@@ -94,7 +94,7 @@ namespace BestPracticesCodeGenerator
             foreach (PropertyInfo property in properties)
             {
                 content.AppendLine("\t\t[Fact]");
-                content.AppendLine($"\t\tpublic void Execute_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
+                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
                 content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");

@@ -63,7 +63,15 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
 
-            foreach (var item in properties)
+            var propertiesToAdd = new List<PropertyInfo>();
+            propertiesToAdd.AddRange(properties);
+
+            if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
+            {
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
+            }
+
+            foreach (var item in propertiesToAdd)
             {
                 content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");

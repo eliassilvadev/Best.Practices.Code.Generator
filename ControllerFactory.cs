@@ -14,7 +14,8 @@ namespace BestPracticesCodeGenerator
         public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath,
             bool generateCreateUseCase,
             bool generateUpdateUseCase,
-            bool generateDeleteUseCase)
+            bool generateDeleteUseCase,
+            bool generateGetByIdUseCase)
         {
             Validate(fileContent);
 
@@ -23,7 +24,7 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, classProperties, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, filePath);
+            return CreateUseCaseClass(fileContent, originalClassName, classProperties, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, generateGetByIdUseCase, filePath);
         }
 
         private static string CreateUseCaseClass(
@@ -33,6 +34,7 @@ namespace BestPracticesCodeGenerator
             bool generateCreateUseCase,
             bool generateUpdateUseCase,
             bool generateDeleteUseCase,
+            bool generateGetByIdUseCase,
             string filePath)
         {
             var content = new StringBuilder();
@@ -57,11 +59,11 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("\t{");
 
-            GeneratePrivateVariables(content, originalClassName, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase);
+            GeneratePrivateVariables(content, originalClassName, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, generateGetByIdUseCase);
 
-            GenerateControllerConstructor(content, originalClassName, newClassName, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase);
+            GenerateControllerConstructor(content, originalClassName, newClassName, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, generateGetByIdUseCase);
 
-            GenerateApiMethods(content, originalClassName, properties, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase);
+            GenerateApiMethods(content, originalClassName, properties, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, generateGetByIdUseCase);
 
             content.AppendLine("\t}");
 
@@ -76,7 +78,7 @@ namespace BestPracticesCodeGenerator
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateControllerConstructor(StringBuilder content, string originalClassName, string newClassName, bool generateCreateUseCase, bool generateUpdateUseCase, bool generateDeleteUseCase)
+        private static void GenerateControllerConstructor(StringBuilder content, string originalClassName, string newClassName, bool generateCreateUseCase, bool generateUpdateUseCase, bool generateDeleteUseCase, bool generateGetByIdUseCase)
         {
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}(");
@@ -84,21 +86,28 @@ namespace BestPracticesCodeGenerator
 
             if (generateCreateUseCase)
             {
-                var parentesis = (!generateUpdateUseCase && !generateDeleteUseCase) ? ")" : "";
+                var parentesis = (!generateUpdateUseCase && !generateDeleteUseCase && !generateGetByIdUseCase) ? ")" : "";
 
-                content.AppendLine($"\t\t\tCreate{originalClassName}UseCase create{originalClassName}UseCase" + ((generateUpdateUseCase || generateDeleteUseCase) ? "," : "") + parentesis);
+                content.AppendLine($"\t\t\tCreate{originalClassName}UseCase create{originalClassName}UseCase" + ((generateUpdateUseCase || generateDeleteUseCase || generateGetByIdUseCase) ? "," : "") + parentesis);
             }
 
             if (generateUpdateUseCase)
             {
-                var parentesis = (!generateDeleteUseCase) ? ")" : "";
+                var parentesis = (!generateDeleteUseCase && !generateGetByIdUseCase) ? ")" : "";
 
-                content.AppendLine($"\t\t\tUpdate{originalClassName}UseCase update{originalClassName}UseCase" + (generateDeleteUseCase ? "," : "") + parentesis);
+                content.AppendLine($"\t\t\tUpdate{originalClassName}UseCase update{originalClassName}UseCase" + (generateDeleteUseCase || generateGetByIdUseCase ? "," : "") + parentesis);
             }
 
             if (generateDeleteUseCase)
             {
-                content.AppendLine($"\t\t\tDelete{originalClassName}UseCase delete{originalClassName}UseCase)");
+                var parentesis = (!generateGetByIdUseCase) ? ")" : "";
+
+                content.AppendLine($"\t\t\tDelete{originalClassName}UseCase delete{originalClassName}UseCase" + (generateGetByIdUseCase ? "," : "") + parentesis);
+            }
+
+            if (generateGetByIdUseCase)
+            {
+                content.AppendLine($"\t\t\tGet{originalClassName}ByIdUseCase get{originalClassName}ByIdUseCase)");
             }
 
             content.AppendLine("\t\t\t: base(httpContextAccessor)");
@@ -112,6 +121,9 @@ namespace BestPracticesCodeGenerator
             if (generateDeleteUseCase)
                 content.AppendLine($"\t\t\t\t_delete{originalClassName}UseCase = delete{originalClassName}UseCase;");
 
+            if (generateGetByIdUseCase)
+                content.AppendLine($"\t\t\t\t_get{originalClassName}ByIdUseCase = get{originalClassName}ByIdUseCase;");
+
             content.AppendLine("\t\t\t}");
             content.AppendLine("");
         }
@@ -122,7 +134,8 @@ namespace BestPracticesCodeGenerator
             IList<PropertyInfo> properties,
             bool generateCreateUseCase,
             bool generateUpdateUseCase,
-            bool generateDeleteUseCase)
+            bool generateDeleteUseCase,
+            bool generateGetByIdUseCase)
         {
             if (generateCreateUseCase)
             {
@@ -159,9 +172,20 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("\t\t\t}");
                 content.AppendLine();
             }
+
+            if (generateGetByIdUseCase)
+            {
+                content.AppendLine($"\t\t\t[HttpGet(\"{{id}}\")]");
+                content.AppendLine($"\t\t\t[ProducesResponseType(typeof({originalClassName}Output), StatusCodes.Status200OK)]");
+                content.AppendLine($"\t\t\tpublic async Task<IActionResult> Get{originalClassName}ById(Guid id)");
+                content.AppendLine("\t\t\t{");
+                content.AppendLine($"\t\t\t\treturn OutputConverter(await _get{originalClassName}ByIdUseCase.ExecuteAsync(id));");
+                content.AppendLine("\t\t\t}");
+                content.AppendLine();
+            }
         }
 
-        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, bool generateCreateUseCase, bool generateUpdateUseCase, bool generateDeleteUseCase)
+        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, bool generateCreateUseCase, bool generateUpdateUseCase, bool generateDeleteUseCase, bool generateGetByIdUseCase)
         {
             if (generateCreateUseCase)
                 content.AppendLine($"\t\tprivate readonly Create{originalClassName}UseCase _create{originalClassName}UseCase;");
@@ -171,6 +195,9 @@ namespace BestPracticesCodeGenerator
 
             if (generateDeleteUseCase)
                 content.AppendLine($"\t\tprivate readonly Delete{originalClassName}UseCase _delete{originalClassName}UseCase;");
+
+            if (generateGetByIdUseCase)
+                content.AppendLine($"\t\tprivate readonly Get{originalClassName}ByIdUseCase _get{originalClassName}ByIdUseCase;");
 
             content.AppendLine($"");
         }

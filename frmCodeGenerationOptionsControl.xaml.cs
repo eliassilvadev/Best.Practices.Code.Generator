@@ -44,7 +44,7 @@ namespace BestPracticesCodeGenerator
 
         private string GetDapperCommandProviderPath(Solution solution, string originalFilePath)
         {
-            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".CommandProvider.Dapper"))
+            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
 
             var commandProvidersFolder = commandProviderProject?.Children.Where(n => n.Text.Equals("CommandProviders"))
@@ -106,7 +106,7 @@ namespace BestPracticesCodeGenerator
 
         private string GetDapperTableDefinitionPath(Solution solution, string originalFilePath)
         {
-            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".CommandProvider.Dapper"))
+            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
 
             var tableDefinitionsFolder = commandProviderProject?.Children.Where(n => n.Text.Equals("TableDefinitions"))
@@ -162,7 +162,7 @@ namespace BestPracticesCodeGenerator
 
         private string GetDapperCommandPath(Solution solution, string originalFilePath)
         {
-            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".CommandProvider.Dapper"))
+            var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
 
             var entityCommandsFolder = commandProviderProject?.Children.Where(n => n.Text.Equals("EntityCommands"))
@@ -358,6 +358,10 @@ namespace BestPracticesCodeGenerator
             filePath = GetEntityTestsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), EntityTestsFactory.Create(FileContent, ClassProperties, filePath));
 
+            newFileName = string.Concat(GetTimeStamp(), "CreateTable", FileName.Substring(0, FileName.Length - 3), ".sql");
+            filePath = GetMigratonsPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), MigrationCreateTableFactory.Create(FileContent, ClassProperties, filePath));
+
             if (SEL_GenerateCreateUseCase.IsChecked.Value)
             {
                 GenerateCreateUseCaseAsync();
@@ -373,7 +377,12 @@ namespace BestPracticesCodeGenerator
                 GenerateDeleteUseCaseAsync();
             }
 
-            if ((SEL_GenerateCreateUseCase.IsChecked.Value) || SEL_GenerateUpdateUseCase.IsChecked.Value || SEL_GenerateDeleteUseCase.IsChecked.Value)
+            if (SEL_GenerateGetUseCase.IsChecked.Value)
+            {
+                GenerateGetUseCaseAsync();
+            }
+
+            if ((SEL_GenerateCreateUseCase.IsChecked.Value) || SEL_GenerateUpdateUseCase.IsChecked.Value || SEL_GenerateDeleteUseCase.IsChecked.Value || SEL_GenerateGetUseCase.IsChecked.Value)
             {
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Output.cs");
                 filePath = GetOutputDtoPath(Solution, OriginalFilePath);
@@ -385,10 +394,77 @@ namespace BestPracticesCodeGenerator
 
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Controller.cs");
                 filePath = GetControllerPath(Solution, OriginalFilePath);
-                File.WriteAllText(Path.Combine(filePath, newFileName), ControllerFactory.Create(FileContent, ClassProperties, filePath, SEL_GenerateCreateUseCase.IsChecked.Value, SEL_GenerateUpdateUseCase.IsChecked.Value, SEL_GenerateDeleteUseCase.IsChecked.Value));
+                File.WriteAllText(Path.Combine(filePath, newFileName), ControllerFactory.Create(FileContent, ClassProperties, filePath, SEL_GenerateCreateUseCase.IsChecked.Value, SEL_GenerateUpdateUseCase.IsChecked.Value, SEL_GenerateDeleteUseCase.IsChecked.Value, SEL_GenerateGetUseCase.IsChecked.Value));
             }
 
             await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
+        }
+
+        private void GenerateGetUseCaseAsync()
+        {
+            var newFileName = string.Concat("Get", FileName.Substring(0, FileName.Length - 3), "ByIdUseCase.cs");
+            var filePath = GetUseCasesPath(Solution, OriginalFilePath);
+            File.WriteAllText(Path.Combine(filePath, newFileName), GetByIdUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
+            newFileName = string.Concat("Get", FileName.Substring(0, FileName.Length - 3), "ByIdUseCaseTests.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), GetByIdUseCaseFactoryTestsFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetInterfaceQueryProviderPath(Solution, OriginalFilePath);
+            newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), InterfaceQueryProviderFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetDapperQueryProviderPath(Solution, OriginalFilePath);
+            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), DapperQueryProviderFactory.Create(FileContent, ClassProperties, filePath));
+
+        }
+
+        private string GetInterfaceQueryProviderPath(Solution solution, string originalFilePath)
+        {
+            var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
+             .FirstOrDefault();
+
+            var applicationFolder = presentationProject?.Children.Where(n => n.Text.Equals("Application"))
+                .FirstOrDefault();
+
+            var cqrsFolder = applicationFolder?.Children.Where(n => n.Text.Equals("Cqrs"))
+                .FirstOrDefault();
+
+            var queryProvidersFolder = cqrsFolder?.Children.Where(n => n.Text.Equals("QueryProviders"))
+                .FirstOrDefault();
+
+            return (queryProvidersFolder is not null) ? queryProvidersFolder.FullPath : originalFilePath;
+        }
+
+        private string GetDapperQueryProviderPath(Solution solution, string originalFilePath)
+        {
+            var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
+             .FirstOrDefault();
+
+            var queryProvidersFolder = presentationProject?.Children.Where(n => n.Text.Equals("QueryProviders"))
+                .FirstOrDefault();
+
+            return (queryProvidersFolder is not null) ? queryProvidersFolder.FullPath : originalFilePath;
+        }
+
+        private string GetTimeStamp()
+        {
+            return DateTime.Now.ToString("yyyyMMddhhmmss");
+        }
+
+        private string GetMigratonsPath(Solution solution, string originalFilePath)
+        {
+            var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
+              .FirstOrDefault();
+
+            var migrationsFolder = presentationProject?.Children.Where(n => n.Text.Equals("Migrations"))
+                .FirstOrDefault();
+
+            var sctructuralScriptsFolder = migrationsFolder?.Children.Where(n => n.Text.Equals("SctructuralScripts"))
+                .FirstOrDefault();
+
+            return (sctructuralScriptsFolder is not null) ? sctructuralScriptsFolder.FullPath : originalFilePath;
         }
 
         private string GetControllerPath(Solution solution, string originalFilePath)

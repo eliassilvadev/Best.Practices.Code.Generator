@@ -64,6 +64,13 @@
                             </Style>
                         </CheckBox.Style>
                     </CheckBox>
+                    <CheckBox Name="SEL_GenerateGetUseCase" Content="GetById" IsChecked="False" Margin="10,0,10,0" >
+                        <CheckBox.Style>
+                            <Style TargetType="{x:Type CheckBox}">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
                     <StackPanel Orientation ="Horizontal" VerticalAlignment="Stretch">
                         <Button Click="BTN_Generate_Click" Width="18" Height="18" Name="BTN_Generate" Margin="10,0,0,0" Background="Transparent"  BorderThickness="0" ToolTip="Generate classes" IsEnabled="False">
                             <Image Source="Resources\generateFile.png" />
