@@ -64,7 +64,7 @@
                             </Style>
                         </CheckBox.Style>
                     </CheckBox>
-                    <CheckBox Name="SEL_GenerateGetUseCase" Content="GetById" IsChecked="False" Margin="10,0,10,0" >
+                    <CheckBox Name="SEL_GenerateGetUseCase" Content="Get" IsChecked="False" Margin="10,0,10,0" >
                         <CheckBox.Style>
                             <Style TargetType="{x:Type CheckBox}">
                                 <Setter Property="Foreground" Value="White"/>

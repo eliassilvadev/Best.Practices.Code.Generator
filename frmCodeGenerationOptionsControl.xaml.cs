@@ -423,7 +423,7 @@ namespace BestPracticesCodeGenerator
         private string GetInterfaceQueryProviderPath(Solution solution, string originalFilePath)
         {
             var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
-             .FirstOrDefault();
+                .FirstOrDefault();
 
             var applicationFolder = presentationProject?.Children.Where(n => n.Text.Equals("Application"))
                 .FirstOrDefault();
