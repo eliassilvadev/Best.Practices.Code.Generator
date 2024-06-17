@@ -31,6 +31,7 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("using Best.Practices.Core.Extensions;");
             content.AppendLine("using Best.Practices.Core.Application.UseCases;");
+            content.AppendLine("using Best.Practices.Core.Exceptions;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
@@ -78,7 +79,8 @@ namespace BestPracticesCodeGenerator
         {
             content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Guid {className.GetWordWithFirstLetterDown()}Id)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()}Output = await _{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.GetById({className.GetWordWithFirstLetterDown()}Id);");
+            content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()}Output = await _{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.GetById({className.GetWordWithFirstLetterDown()}Id) ??");
+            content.AppendLine($"\t\t\t\tthrow new ResourceNotFoundException(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
             content.AppendLine("");
             content.AppendLine($"\t\t\t return CreateSuccessOutput({className.GetWordWithFirstLetterDown()}Output);");
             content.AppendLine("\t\t}");

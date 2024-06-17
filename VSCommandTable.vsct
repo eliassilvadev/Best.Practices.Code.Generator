@@ -9,7 +9,7 @@
   <Commands package="BestPracticesCodeGenerator">
     <Groups>
       <Group guid="BestPracticesCodeGenerator" id="MyMenuGroup" priority="0x0600">
-			<Parent guid="VSMainMenu" id="ItemNode" />
+			<Parent guid="VSMainMenu" id="ItemNode" />			
       </Group>
     </Groups>
 
@@ -27,7 +27,7 @@
       </Button>
       <Button guid="guidBestPracticesCodeGeneratorPackageCmdSet" id="cmdidfrmCodeGenerationOptionsCommand" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
-        <Icon guid="guidImages" id="bmpPic1" />
+		  <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <ButtonText>frmCodeGenerationOptions</ButtonText>
         </Strings>
@@ -46,9 +46,9 @@
   
     <GuidSymbol value="{da2ba8c3-d21a-41e6-b2dd-fe079d5cbaf8}" name="guidBestPracticesCodeGeneratorPackageCmdSet">
       <IDSymbol value="256" name="cmdidfrmCodeGenerationOptionsCommand" />
-    </GuidSymbol>
-  
-    <GuidSymbol value="{3bc7f790-9200-40f6-9d42-6f96023499af}" name="guidImages">
+    </GuidSymbol> 
+
+	  <GuidSymbol value="{3bc7f790-9200-40f6-9d42-6f96023499af}" name="guidImages">
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

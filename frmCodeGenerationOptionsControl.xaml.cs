@@ -418,6 +418,14 @@ namespace BestPracticesCodeGenerator
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), DapperQueryProviderFactory.Create(FileContent, ClassProperties, filePath));
 
+            filePath = GetOutputBuilderPath(Solution, OriginalFilePath);
+            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutputBuilder.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), ListItemOutputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+
+            filePath = GetOutputDtoPath(Solution, OriginalFilePath);
+            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutput.cs");
+            File.WriteAllText(Path.Combine(filePath, newFileName), ListItemOutputFactory.Create(FileContent, ClassProperties, filePath));
+
         }
 
         private string GetInterfaceQueryProviderPath(Solution solution, string originalFilePath)

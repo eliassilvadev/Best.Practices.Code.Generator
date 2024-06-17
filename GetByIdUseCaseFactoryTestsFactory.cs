@@ -31,12 +31,13 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("using Best.Practices.Core.Common;");
             content.AppendLine("using Best.Practices.Core.Extensions;");
-            content.AppendLine("using Best.Practices.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -88,6 +89,22 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Verify(x => x.GetById(id), Times.Once);");
+            content.AppendLine("\t\t}");
+            content.AppendLine();
+            content.AppendLine("\t\t[Fact]");
+            content.AppendLine($"\t\tpublic async Task Execute_When{className}DoesNotExists_ReturnsError()");
+            content.AppendLine("\t\t{");
+            content.AppendLine($"\t\t\tvar id = Guid.NewGuid();");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Setup(x => x.GetById(id))");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(null as {className}Output);");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
+            content.AppendLine("");
+            content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
+            content.AppendLine("\t\t\toutput.OutputObject.Should().BeNull();");
+            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Verify(x => x.GetById(id), Times.Once);");
             content.AppendLine("\t\t}");
             content.AppendLine();

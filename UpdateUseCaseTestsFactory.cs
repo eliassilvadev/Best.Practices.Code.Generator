@@ -41,6 +41,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Models.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
             content.AppendLine($"using FluentValidation;");
 
             content.AppendLine("");
@@ -103,6 +104,23 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
             content.AppendLine("\t\t}");
             content.AppendLine();
+            content.AppendLine("\t\t[Fact]");
+            content.AppendLine($"\t\tpublic async Task Execute_When{className}DoesNotExists_ReturnsError()");
+            content.AppendLine("\t\t{");
+            content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
+            content.AppendLine($"\t\t\t\t.Build();");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.Id.Value))");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(null as {className});");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
+            content.AppendLine("");
+            content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
+            content.AppendLine("\t\t\toutput.OutputObject.Should().BeNull();");
+            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id)));");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
+            content.AppendLine("\t\t}");
+            content.AppendLine();
 
             var propertiesToPreventDuplication = properties
                 .Where(p => p.PreventDuplication)
@@ -125,7 +143,7 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
                 content.AppendLine("");
-                content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
+                content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
                 content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
                 content.AppendLine("\t\t}");
                 content.AppendLine();
@@ -138,7 +156,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
             content.AppendLine($"\t\tprivate readonly Mock<IValidator<Update{originalClassName}Input>> _validator;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
-            content.AppendLine($"");
+            content.AppendLine("");
         }
 
         private static string GetNameSpace(string filePath)
