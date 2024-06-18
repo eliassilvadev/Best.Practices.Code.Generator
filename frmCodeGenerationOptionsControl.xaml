@@ -72,7 +72,7 @@
                         </CheckBox.Style>
                     </CheckBox>
                     <StackPanel Orientation ="Horizontal" VerticalAlignment="Stretch">
-                        <Button Name="BTN_Generate" Style="{StaticResource HoverButtonStyle}" Click="BTN_Generate_Click" Width="80" Height="20" Background="Transparent"  BorderThickness="0" >
+                        <Button Name="BTN_Generate" Click="BTN_Generate_Click" Width="80" Height="20" Background="Transparent"  BorderThickness="0" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="Resources\generateFile.png" Width="18" Height="18" Margin="0,0,5,0" />
                                 <TextBlock Text="Generate" Foreground="White"/>
