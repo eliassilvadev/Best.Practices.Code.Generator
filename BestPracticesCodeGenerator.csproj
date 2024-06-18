@@ -109,6 +109,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\open.png" />
     <Resource Include="Resources\refresh.png" />
     <Resource Include="Resources\save.png" />
     <None Include="source.extension.vsixmanifest">

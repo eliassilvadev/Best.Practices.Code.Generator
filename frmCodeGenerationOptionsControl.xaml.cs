@@ -70,15 +70,7 @@ namespace BestPracticesCodeGenerator
             }
 
             pane?.Activate();
-
-            var outPutMessage = string.Empty;
-
-            if (!blankLine)
-                outPutMessage += $"{DateTime.Now}: {message}";
-
-            outPutMessage += "\n";
-
-            pane?.OutputString(outPutMessage);
+            pane?.OutputString(message + "\n");
         }
 
 
@@ -390,7 +382,7 @@ namespace BestPracticesCodeGenerator
         {
             var newFileName = "";
 
-            WriteFileNewCreatedFileMessageToOutPutWindow("Files above were automatically generated...");
+            WriteFileNewCreatedFileMessageToOutPutWindow("Files below were automatically generated...");
             WriteFileNewCreatedFileMessageToOutPutWindow("", true);
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Builder.cs");
@@ -477,7 +469,8 @@ namespace BestPracticesCodeGenerator
             }
 
             WriteFileNewCreatedFileMessageToOutPutWindow("", true);
-            WriteFileNewCreatedFileMessageToOutPutWindow("Please remember to finish coding with your specific needs...");
+            WriteFileNewCreatedFileMessageToOutPutWindow("Double click on file path to navigate.");
+            WriteFileNewCreatedFileMessageToOutPutWindow("Please, remember to finish coding with your specific needs...");
 
             await VS.MessageBox.ShowWarningAsync("Best.Practices generator", "Files generated with success.\nCheck out output window for details.");
         }
@@ -614,6 +607,27 @@ namespace BestPracticesCodeGenerator
             GRD_Properties.ItemsSource = this.ClassProperties;
             BTN_Generate.IsEnabled = true;
             LBL_ClassProperties.Text = "Properties from " + FileName.Replace(":", "").Replace(".cs", "");
+        }
+
+        private void SEL_GenerateAllUseCase_Checked(object sender, RoutedEventArgs e)
+        {
+            SEL_GenerateCreateUseCase.IsChecked = true;
+            SEL_GenerateUpdateUseCase.IsChecked = true;
+            SEL_GenerateDeleteUseCase.IsChecked = true;
+            SEL_GenerateGetUseCase.IsChecked = true;
+        }
+
+        private void SEL_GenerateAllUseCase_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SEL_GenerateCreateUseCase.IsChecked = false;
+            SEL_GenerateUpdateUseCase.IsChecked = false;
+            SEL_GenerateDeleteUseCase.IsChecked = false;
+            SEL_GenerateGetUseCase.IsChecked = false;
+        }
+
+        private void BTN_GoToEntity_Click(object sender, RoutedEventArgs e)
+        {
+            VS.Documents.OpenAsync(OriginalFileName).Wait();
         }
     }
 }
