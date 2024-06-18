@@ -125,7 +125,7 @@
         </Grid>
         <StackPanel Name="PNL_InstructionsToLoadClass" Visibility="Visible"   HorizontalAlignment="Center"  VerticalAlignment="Center">
             <TextBlock
-            Text="To generate classes of DDD layers from a model, right click on an entity class in solution explorer and select 'Generate Best.Practices code'"
+            Text="To generate classes of DDD layers from a model, right click on editor or solution explorer file of an entity class and select 'Generate Best.Practices code'"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             TextAlignment="Center"
