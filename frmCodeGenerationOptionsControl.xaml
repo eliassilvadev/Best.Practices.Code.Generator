@@ -92,7 +92,10 @@
                     <TextBlock Name="LBL_ClassProperties" TextAlignment="Center" FontSize="14" FontWeight="Bold" Background="#353535" Text="Class properties" HorizontalAlignment="Stretch" />
                     <DataGrid Name="GRD_Properties" SelectionMode="Extended" AutoGenerateColumns="False" >
                         <DataGrid.Resources>
-                            <Style TargetType="DataGridCell">
+                            <Style TargetType="DataGridCell" x:Key="CellWithPaddingStyle">
+                                <Setter Property="Margin" Value="5,0,0,0"/>
+                            </Style>
+                            <Style TargetType="DataGridCell">                                
                                 <Setter Property="BorderThickness" Value="0" />
                                 <Style.Triggers>
                                     <Trigger Property="DataGridCell.IsSelected" Value="True">
@@ -114,8 +117,8 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="250"/>
-                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="250" />
+                            <DataGridTextColumn CellStyle="{StaticResource CellWithPaddingStyle}" Header="Type" Binding="{Binding Type}" Width="250"/>
+                            <DataGridTextColumn CellStyle="{StaticResource CellWithPaddingStyle}" Header="Name" Binding="{Binding Name}" Width="250" />
                             <DataGridCheckBoxColumn Header="Generate get method" Binding="{Binding GenerateGetMethodOnRepository}" Width="Auto" />
                             <DataGridCheckBoxColumn Header="Prevent duplication" Binding="{Binding PreventDuplication}" Width="Auto" />
                         </DataGrid.Columns>
