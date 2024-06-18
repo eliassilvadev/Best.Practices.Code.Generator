@@ -1,8 +1,11 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
+using EnvDTE;
+using EnvDTE80;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +18,9 @@ namespace BestPracticesCodeGenerator
     /// </summary>
     public partial class frmCodeGenerationOptionsControl : UserControl
     {
-        public Solution Solution { get; set; }
+        private DTE2 _dte;
+
+        public Community.VisualStudio.Toolkit.Solution Solution { get; set; }
         public string OriginalFileName { get; set; }
         public string FileContent { get; set; }
         public string OriginalFilePath { get; set; }
@@ -28,7 +33,54 @@ namespace BestPracticesCodeGenerator
         public frmCodeGenerationOptionsControl()
         {
             this.InitializeComponent();
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
         }
+
+        public void WriteFileNewCreatedFileMessageToOutPutWindow(string message, bool blankLine = false)
+        {
+            WriteToOutputWindow(message, blankLine);
+        }
+
+        public void WriteToOutputWindow(string message, bool blankLine = false)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            EnvDTE.OutputWindow outputWindow = _dte.ToolWindows.OutputWindow;
+
+            EnvDTE.OutputWindowPane pane = null;
+            try
+            {
+                foreach (EnvDTE.OutputWindowPane p in outputWindow.OutputWindowPanes)
+                {
+                    if (p.Name == "Best.Practices generator")
+                    {
+                        pane = p;
+                        break;
+                    }
+                }
+
+                if (pane == null)
+                {
+                    pane = outputWindow.OutputWindowPanes.Add("Best.Practices generator");
+                }
+            }
+            catch (COMException)
+            {
+
+            }
+
+            pane?.Activate();
+
+            var outPutMessage = string.Empty;
+
+            if (!blankLine)
+                outPutMessage += $"{DateTime.Now}: {message}";
+
+            outPutMessage += "\n";
+
+            pane?.OutputString(outPutMessage);
+        }
+
 
         /// <summary>
         /// Handles click on the button by displaying a message box.
@@ -42,7 +94,7 @@ namespace BestPracticesCodeGenerator
             GenerateAsync().Wait();
         }
 
-        private string GetDapperCommandProviderPath(Solution solution, string originalFilePath)
+        private string GetDapperCommandProviderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
@@ -53,7 +105,7 @@ namespace BestPracticesCodeGenerator
             return (commandProvidersFolder is not null) ? commandProvidersFolder.FullPath : originalFilePath;
         }
 
-        private string GetOutputBuilderPath(Solution solution, string originalFilePath)
+        private string GetOutputBuilderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
                 .FirstOrDefault();
@@ -70,7 +122,7 @@ namespace BestPracticesCodeGenerator
             return (buildersFolder is not null) ? buildersFolder.FullPath : originalFilePath;
         }
 
-        private string GetInputBuilderPath(Solution solution, string originalFilePath)
+        private string GetInputBuilderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
                  .FirstOrDefault();
@@ -87,7 +139,7 @@ namespace BestPracticesCodeGenerator
             return (buildersFolder is not null) ? buildersFolder.FullPath : originalFilePath;
         }
 
-        private string GetInputValidatorTestsPath(Solution solution, string originalFilePath)
+        private string GetInputValidatorTestsPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreTestsProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
               .FirstOrDefault();
@@ -104,7 +156,7 @@ namespace BestPracticesCodeGenerator
             return (validatorsFolder is not null) ? validatorsFolder.FullPath : originalFilePath;
         }
 
-        private string GetDapperTableDefinitionPath(Solution solution, string originalFilePath)
+        private string GetDapperTableDefinitionPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
@@ -115,7 +167,7 @@ namespace BestPracticesCodeGenerator
             return (tableDefinitionsFolder is not null) ? tableDefinitionsFolder.FullPath : originalFilePath;
         }
 
-        private string GetInputValidatorPath(Solution solution, string originalFilePath)
+        private string GetInputValidatorPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                  .FirstOrDefault();
@@ -132,7 +184,7 @@ namespace BestPracticesCodeGenerator
             return (validatorsFolder is not null) ? validatorsFolder.FullPath : originalFilePath;
         }
 
-        private string GetEntityTestsPath(Solution solution, string originalFilePath)
+        private string GetEntityTestsPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreTestsProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
                .FirstOrDefault();
@@ -146,7 +198,7 @@ namespace BestPracticesCodeGenerator
             return (modelsFolder is not null) ? modelsFolder.FullPath : originalFilePath;
         }
 
-        private string GetUseCasesTestsPath(Solution solution, string originalFilePath)
+        private string GetUseCasesTestsPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreTestsProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
                 .FirstOrDefault();
@@ -160,7 +212,7 @@ namespace BestPracticesCodeGenerator
             return (useCasesFolder is not null) ? useCasesFolder.FullPath : originalFilePath;
         }
 
-        private string GetDapperCommandPath(Solution solution, string originalFilePath)
+        private string GetDapperCommandPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var commandProviderProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
                .FirstOrDefault();
@@ -171,12 +223,12 @@ namespace BestPracticesCodeGenerator
             return (entityCommandsFolder is not null) ? entityCommandsFolder.FullPath : originalFilePath;
         }
 
-        private string GetOutputDtoPath(Solution solution, string originalFilePath)
+        private string GetOutputDtoPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
-            return GetInputDtoPath(solution, originalFilePath);
+            return GetInputDtoPath(Solution, OriginalFilePath);
         }
 
-        private string GetInputDtoPath(Solution solution, string originalFilePath)
+        private string GetInputDtoPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                   .FirstOrDefault();
@@ -190,7 +242,7 @@ namespace BestPracticesCodeGenerator
             return (dtosFolder is not null) ? dtosFolder.FullPath : originalFilePath;
         }
 
-        private string GetUseCasesPath(Solution solution, string originalFilePath)
+        private string GetUseCasesPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                   .FirstOrDefault();
@@ -204,7 +256,7 @@ namespace BestPracticesCodeGenerator
             return (useCasesFolder is not null) ? useCasesFolder.FullPath : originalFilePath;
         }
 
-        private string GetRepositoryPath(Solution solution, string originalFilePath)
+        private string GetRepositoryPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                  .FirstOrDefault();
@@ -218,7 +270,7 @@ namespace BestPracticesCodeGenerator
             return (repositoryFolder is not null) ? repositoryFolder.FullPath : originalFilePath;
         }
 
-        private string GetInterfaceCommandProviderPath(Solution solution, string originalFilePath)
+        private string GetInterfaceCommandProviderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                .FirstOrDefault();
@@ -235,7 +287,7 @@ namespace BestPracticesCodeGenerator
             return (commandProvidersFolder is not null) ? commandProvidersFolder.FullPath : originalFilePath;
         }
 
-        private string GetInterfaceRepositoryPath(Solution solution, string originalFilePath)
+        private string GetInterfaceRepositoryPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                 .FirstOrDefault();
@@ -257,27 +309,32 @@ namespace BestPracticesCodeGenerator
             var newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "Input.cs");
             var filePath = GetInputDtoPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
             filePath = GetInputValidatorPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
             filePath = GetInputBuilderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
             filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateInputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
             filePath = GetUseCasesPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
-
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Create", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
             filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), CreateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
         }
 
         private void GenerateUpdateUseCaseAsync()
@@ -285,28 +342,34 @@ namespace BestPracticesCodeGenerator
             var filePath = GetInputDtoPath(Solution, OriginalFilePath);
             var newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "Input.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputDtoFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
 
             filePath = GetInputValidatorPath(Solution, OriginalFilePath);
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidator.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputValidatorTests.cs");
             filePath = GetInputValidatorTestsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputValidatorTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
 
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "InputBuilder.cs");
             filePath = GetInputBuilderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateInputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
             filePath = GetUseCasesPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
             newFileName = string.Concat("Update", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), UpdateUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
         }
 
@@ -315,52 +378,65 @@ namespace BestPracticesCodeGenerator
             var newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCase.cs");
             var filePath = GetUseCasesPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
             newFileName = string.Concat("Delete", FileName.Substring(0, FileName.Length - 3), "UseCaseTests.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), DeleteUseCaseTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
         }
 
         private async Task GenerateAsync()
         {
             var newFileName = "";
 
+            WriteFileNewCreatedFileMessageToOutPutWindow("Files above were automatically generated...");
+            WriteFileNewCreatedFileMessageToOutPutWindow("", true);
+
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Builder.cs");
             var filePath = GetEntityBuilderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), EntityBuilderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "Repository.cs");
             filePath = GetInterfaceRepositoryPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), InterfaceRepositoryFactory.Create(FileContent, ClassProperties, filePath));
-
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Repository.cs");
             filePath = GetRepositoryPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), RepositoryFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Command.cs");
             filePath = GetDapperCommandPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), DapperCommandFactory.Create(FileContent, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "CommandProvider.cs");
             filePath = GetInterfaceCommandProviderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), InterfaceCommandProviderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "CqrsCommandProvider.cs");
             filePath = GetDapperCommandProviderPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), DapperCommandProviderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat("Dapper", FileName.Substring(0, FileName.Length - 3), "TableDefinition.cs");
             filePath = GetDapperTableDefinitionPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), DapperTableDefinitionFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Tests.cs");
             filePath = GetEntityTestsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), EntityTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             newFileName = string.Concat(GetTimeStamp(), "CreateTable", FileName.Substring(0, FileName.Length - 3), ".sql");
             filePath = GetMigratonsPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), MigrationCreateTableFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             if (SEL_GenerateCreateUseCase.IsChecked.Value)
             {
@@ -387,17 +463,23 @@ namespace BestPracticesCodeGenerator
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Output.cs");
                 filePath = GetOutputDtoPath(Solution, OriginalFilePath);
                 File.WriteAllText(Path.Combine(filePath, newFileName), OutputDtoFactory.Create(FileContent, ClassProperties, filePath));
+                WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "OutputBuilder.cs");
                 filePath = GetOutputBuilderPath(Solution, OriginalFilePath);
                 File.WriteAllText(Path.Combine(filePath, newFileName), OutputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+                WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Controller.cs");
                 filePath = GetControllerPath(Solution, OriginalFilePath);
                 File.WriteAllText(Path.Combine(filePath, newFileName), ControllerFactory.Create(FileContent, ClassProperties, filePath, SEL_GenerateCreateUseCase.IsChecked.Value, SEL_GenerateUpdateUseCase.IsChecked.Value, SEL_GenerateDeleteUseCase.IsChecked.Value, SEL_GenerateGetUseCase.IsChecked.Value));
+                WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
             }
 
-            await VS.MessageBox.ShowWarningAsync("MyCommand", "Classes generated with success!");
+            WriteFileNewCreatedFileMessageToOutPutWindow("", true);
+            WriteFileNewCreatedFileMessageToOutPutWindow("Please remember to finish coding with your specific needs...");
+
+            await VS.MessageBox.ShowWarningAsync("Best.Practices generator", "Files generated with success.\nCheck out output window for details.");
         }
 
         private void GenerateGetUseCaseAsync()
@@ -405,30 +487,36 @@ namespace BestPracticesCodeGenerator
             var newFileName = string.Concat("Get", FileName.Substring(0, FileName.Length - 3), "ByIdUseCase.cs");
             var filePath = GetUseCasesPath(Solution, OriginalFilePath);
             File.WriteAllText(Path.Combine(filePath, newFileName), GetByIdUseCaseFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetUseCasesTestsPath(Solution, OriginalFilePath);
             newFileName = string.Concat("Get", FileName.Substring(0, FileName.Length - 3), "ByIdUseCaseTests.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), GetByIdUseCaseFactoryTestsFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetInterfaceQueryProviderPath(Solution, OriginalFilePath);
             newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), InterfaceQueryProviderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetDapperQueryProviderPath(Solution, OriginalFilePath);
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), DapperQueryProviderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetOutputBuilderPath(Solution, OriginalFilePath);
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutputBuilder.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), ListItemOutputBuilderFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
             filePath = GetOutputDtoPath(Solution, OriginalFilePath);
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutput.cs");
             File.WriteAllText(Path.Combine(filePath, newFileName), ListItemOutputFactory.Create(FileContent, ClassProperties, filePath));
+            WriteFileNewCreatedFileMessageToOutPutWindow(Path.Combine(filePath, newFileName));
 
         }
 
-        private string GetInterfaceQueryProviderPath(Solution solution, string originalFilePath)
+        private string GetInterfaceQueryProviderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                 .FirstOrDefault();
@@ -445,7 +533,7 @@ namespace BestPracticesCodeGenerator
             return (queryProvidersFolder is not null) ? queryProvidersFolder.FullPath : originalFilePath;
         }
 
-        private string GetDapperQueryProviderPath(Solution solution, string originalFilePath)
+        private string GetDapperQueryProviderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
              .FirstOrDefault();
@@ -461,7 +549,7 @@ namespace BestPracticesCodeGenerator
             return DateTime.Now.ToString("yyyyMMddhhmmss");
         }
 
-        private string GetMigratonsPath(Solution solution, string originalFilePath)
+        private string GetMigratonsPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
               .FirstOrDefault();
@@ -475,7 +563,7 @@ namespace BestPracticesCodeGenerator
             return (sctructuralScriptsFolder is not null) ? sctructuralScriptsFolder.FullPath : originalFilePath;
         }
 
-        private string GetControllerPath(Solution solution, string originalFilePath)
+        private string GetControllerPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var presentationProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Presentation.AspNetCoreApi"))
                .FirstOrDefault();
@@ -486,7 +574,7 @@ namespace BestPracticesCodeGenerator
             return (controllersFolder is not null) ? controllersFolder.FullPath : originalFilePath;
         }
 
-        private string GetEntityBuilderPath(Solution solution, string originalFilePath)
+        private string GetEntityBuilderPath(Community.VisualStudio.Toolkit.Solution solution, string originalFilePath)
         {
             var coreProject = solution.Children.ToList().Where(c => c.Name.EndsWith(".Core.Tests"))
                 .FirstOrDefault();
