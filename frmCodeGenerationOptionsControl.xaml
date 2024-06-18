@@ -30,7 +30,7 @@
             <Setter Property="Padding" Value="6"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>        
+        </Style>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical">
         <Grid>
@@ -72,14 +72,14 @@
                         </CheckBox.Style>
                     </CheckBox>
                     <StackPanel Orientation ="Horizontal" VerticalAlignment="Stretch">
-                        <Button Click="BTN_Generate_Click" Width="80" Height="20" Background="Transparent"  BorderThickness="0" >
+                        <Button Name="BTN_Generate" Style="{StaticResource HoverButtonStyle}" Click="BTN_Generate_Click" Width="80" Height="20" Background="Transparent"  BorderThickness="0" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="Resources\generateFile.png" Width="18" Height="18" Margin="0,0,5,0" />
                                 <TextBlock Text="Generate" Foreground="White"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Click="BTN_Reload_Click" Width="60" Height="20" Background="Transparent"  BorderThickness="0" Margin="10,0,0,0" >
+                        <Button Name="BTN_Reload"  Click="BTN_Reload_Click" Width="60" Height="20" Background="Transparent"  BorderThickness="0" Margin="10,0,0,0" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="Resources\refresh.png" Width="18" Height="18" Margin="0,0,5,0" />
                                 <TextBlock Text="Reload" Foreground="White"/>
