@@ -28,6 +28,8 @@ namespace BestPracticesCodeGenerator
     {
         public const int MyMenuGroup = 0x0001;
         public const int MyCommand = 0x0100;
+        public const int EditorContextMenuGroup = 0x0101;
+        public const int MyContextMenuCommand = 0x0102;
         public const int cmdidfrmCodeGenerationOptionsCommand = 0x0100;
         public const int bmpPic1 = 0x0001;
         public const int bmpPic2 = 0x0002;

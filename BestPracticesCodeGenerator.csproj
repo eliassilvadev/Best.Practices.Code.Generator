@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Commands\MyContextMenuCommand.cs" />
     <Compile Include="DapperQueryProviderFactory.cs" />
     <Compile Include="GetByIdUseCaseFactoryTestsFactory.cs" />
     <Compile Include="GetByIdUseCaseFactory.cs" />

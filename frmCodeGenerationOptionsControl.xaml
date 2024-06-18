@@ -30,7 +30,7 @@
             <Setter Property="Padding" Value="6"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>
+        </Style>        
     </UserControl.Resources>
     <StackPanel Orientation="Vertical">
         <Grid>
@@ -72,20 +72,25 @@
                         </CheckBox.Style>
                     </CheckBox>
                     <StackPanel Orientation ="Horizontal" VerticalAlignment="Stretch">
-                        <Button Click="BTN_Generate_Click" Width="18" Height="18" Name="BTN_Generate" Margin="10,0,0,0" Background="Transparent"  BorderThickness="0" ToolTip="Generate classes" IsEnabled="False">
-                            <Image Source="Resources\generateFile.png" />
+                        <Button Click="BTN_Generate_Click" Width="80" Height="20" Background="Transparent"  BorderThickness="0" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Resources\generateFile.png" Width="18" Height="18" Margin="0,0,5,0" />
+                                <TextBlock Text="Generate" Foreground="White"/>
+                            </StackPanel>
                         </Button>
-                        <TextBlock Text="Generate" Margin="10,0,0,0"/>
-                        <Button Click="BTN_Reload_Click" Width="18" Height="18" Name="BTN_Reload" Margin="10,0,0,0" Background="Transparent"  BorderThickness="0" ToolTip="Reload type" IsEnabled="False">
-                            <Image Source="Resources\refresh.png" />
+
+                        <Button Click="BTN_Reload_Click" Width="60" Height="20" Background="Transparent"  BorderThickness="0" Margin="10,0,0,0" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Resources\refresh.png" Width="18" Height="18" Margin="0,0,5,0" />
+                                <TextBlock Text="Reload" Foreground="White"/>
+                            </StackPanel>
                         </Button>
-                        <TextBlock Text="Reload" Margin="10,0,0,0"/>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Grid.RowSpan="2" Margin="0,10,0,0">
                     <TextBlock Name="LBL_ClassProperties" TextAlignment="Center" FontSize="14" FontWeight="Bold" Background="#353535" Text="Class properties" HorizontalAlignment="Stretch" />
-                    <DataGrid Name="GRD_Properties" SelectionMode="Extended" >
+                    <DataGrid Name="GRD_Properties" SelectionMode="Extended" AutoGenerateColumns="False" >
                         <DataGrid.Resources>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="BorderThickness" Value="0" />
@@ -96,9 +101,11 @@
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.Resources>
-                        <DataGrid.RowStyle>                           
+                        <DataGrid.RowStyle>
+                          
                             <Style TargetType="DataGridRow">
                                 <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Height" Value="20"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="Background" Value="#606060" />
@@ -106,6 +113,12 @@
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="250"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="250" />
+                            <DataGridCheckBoxColumn Header="Generate get method" Binding="{Binding GenerateGetMethodOnRepository}" Width="Auto" />
+                            <DataGridCheckBoxColumn Header="Prevent duplication" Binding="{Binding PreventDuplication}" Width="Auto" />
+                        </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
             </StackPanel>

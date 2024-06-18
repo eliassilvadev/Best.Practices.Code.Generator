@@ -5,27 +5,23 @@ using System.IO;
 
 namespace BestPracticesCodeGenerator
 {
-    [Command(PackageIds.MyCommand)]
-    internal sealed class MyCommand : BaseCommand<MyCommand>
+    [Command(PackageIds.MyContextMenuCommand)]
+    internal sealed class MyContextMenuCommand : BaseCommand<MyContextMenuCommand>
     {
         private DTE2 _dte;
 
-        public MyCommand()
+        public MyContextMenuCommand()
         {
             _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
         }
 
         public string GetSelectedFileName()
         {
-            var items = (Array)_dte.ToolWindows.SolutionExplorer.SelectedItems;
-            if (items != null && items.Length > 0)
+            Document activeDocument = _dte.ActiveDocument;
+
+            if (activeDocument != null)
             {
-                UIHierarchyItem selItem = items.GetValue(0) as UIHierarchyItem;
-                if (selItem.Object is ProjectItem)
-                {
-                    ProjectItem projItem = selItem.Object as ProjectItem;
-                    return projItem.Properties.Item("FullPath").Value.ToString();
-                }
+                return activeDocument.FullName;
             }
 
             return null;
