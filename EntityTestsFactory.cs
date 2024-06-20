@@ -148,7 +148,7 @@ namespace BestPracticesCodeGenerator
 
             foreach (Match item in matches)
             {
-                propertyes.Add(new MethodInfo(item.Groups[1].Value, item.Groups[2].Value));
+                propertyes.Add(new MethodInfo(item.Groups[2].Value, item.Groups[3].Value));
             }
 
             return propertyes;

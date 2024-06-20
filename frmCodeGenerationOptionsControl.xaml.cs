@@ -653,20 +653,16 @@ namespace BestPracticesCodeGenerator
         private void GRD_Properties_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             var dataGrid = sender as DataGrid;
+
             if (dataGrid == null)
                 return;
 
             if (e.Delta > 0)
-            {
                 SimulateKeyPress(Key.Up);
-            }
-            // Scroll down
-            else if (e.Delta < 0)
-            {
-                SimulateKeyPress(Key.Down);
-            }
 
-            // Marcar o evento como manipulado para evitar processamento adicional
+            else if (e.Delta < 0)
+                SimulateKeyPress(Key.Down);
+
             e.Handled = true;
         }
     }
