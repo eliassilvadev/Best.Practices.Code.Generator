@@ -144,7 +144,9 @@ namespace BestPracticesCodeGenerator
         {
             var propertyes = new List<MethodInfo>();
 
-            foreach (Match item in Regex.Matches(fileContent, @"\b(\w+)\s+(\w+)\s*\(\s*\)"))
+            var matches = Regex.Matches(fileContent, @"\b(public|internal|static|sealed|virtual|override|async)*\s*(\w+<.*?>|\w+)\s+(\w+)\s*\(.*?\)");
+
+            foreach (Match item in matches)
             {
                 propertyes.Add(new MethodInfo(item.Groups[1].Value, item.Groups[2].Value));
             }

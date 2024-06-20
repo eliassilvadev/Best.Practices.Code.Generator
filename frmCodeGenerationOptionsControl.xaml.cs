@@ -2,6 +2,7 @@
 using EnvDTE;
 using EnvDTE80;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 
 namespace BestPracticesCodeGenerator
@@ -588,7 +590,9 @@ namespace BestPracticesCodeGenerator
         {
             var propertyes = new List<PropertyInfo>();
 
-            foreach (Match item in Regex.Matches(FileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
+            var matches = Regex.Matches(FileContent, @"(?>public|protected|internal|private)\s+(static\s+|readonly\s+|virtual\s+|override\s+)*?(?<Type>\S+(?:<.+?>)?)\s+(?<Name>[^\s]+)(?=\s*\{\s*get)");
+
+            foreach (Match item in matches)
             {
                 propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
             }
@@ -603,7 +607,7 @@ namespace BestPracticesCodeGenerator
             this.OriginalFilePath = Path.GetDirectoryName(OriginalFileName);
             this.FileName = Path.GetFileName(OriginalFileName);
 
-            this.ClassProperties = GetPropertiesInfo();
+            this.ClassProperties = new ObservableCollection<PropertyInfo>(GetPropertiesInfo());
             GRD_Properties.ItemsSource = this.ClassProperties;
             BTN_Generate.IsEnabled = true;
             LBL_ClassProperties.Text = "Properties from " + FileName.Replace(":", "").Replace(".cs", "");
@@ -628,6 +632,42 @@ namespace BestPracticesCodeGenerator
         private void BTN_GoToEntity_Click(object sender, RoutedEventArgs e)
         {
             VS.Documents.OpenAsync(OriginalFileName).Wait();
+        }
+
+        private void SimulateKeyPress(Key key)
+        {
+            // Cria uma simulação do KeyEvent
+            KeyEventArgs keyEventArgs = new KeyEventArgs(
+                Keyboard.PrimaryDevice,
+                PresentationSource.FromVisual(this),
+                0,
+                key)
+            {
+                RoutedEvent = Keyboard.KeyDownEvent
+            };
+
+            // Dispara o evento
+            InputManager.Current.ProcessInput(keyEventArgs);
+        }
+
+        private void GRD_Properties_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var dataGrid = sender as DataGrid;
+            if (dataGrid == null)
+                return;
+
+            if (e.Delta > 0)
+            {
+                SimulateKeyPress(Key.Up);
+            }
+            // Scroll down
+            else if (e.Delta < 0)
+            {
+                SimulateKeyPress(Key.Down);
+            }
+
+            // Marcar o evento como manipulado para evitar processamento adicional
+            e.Handled = true;
         }
     }
 }
