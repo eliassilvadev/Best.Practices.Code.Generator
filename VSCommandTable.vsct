@@ -33,7 +33,7 @@
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
 		  <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>frmCodeGenerationOptions</ButtonText>
+          <ButtonText>Generate Best.Practices code</ButtonText>
         </Strings>
       </Button>
 

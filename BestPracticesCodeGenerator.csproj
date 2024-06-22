@@ -53,6 +53,11 @@
     <Compile Include="InterfaceQueryProviderFactory.cs" />
     <Compile Include="ListItemOutputFactory.cs" />
     <Compile Include="ListItemOutputBuilderFactory.cs" />
+    <Compile Include="source.extension.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
     <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
     <Compile Include="frmCodeGenerationOptions2.cs">
@@ -97,11 +102,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\MyCommand.cs" />
     <Compile Include="BestPracticesCodeGeneratorPackage.cs" />
-    <Compile Include="source.extension.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-    </Compile>
     <Compile Include="VSCommandTable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -112,6 +112,10 @@
     <Resource Include="Resources\open.png" />
     <Resource Include="Resources\refresh.png" />
     <Resource Include="Resources\save.png" />
+    <Content Include="ProjectTemplates\Best.Flag.Core.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
       <Generator>VsixManifestGenerator</Generator>
