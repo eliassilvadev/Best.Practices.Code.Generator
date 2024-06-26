@@ -119,6 +119,12 @@ namespace BestPracticesCodeGenerator
             var solutionPath = Path.GetDirectoryName(solution.FullPath);
 
             var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+            var solutionName = solution.Name.Replace(".sln", "");
+
+            int count = Regex.Matches(namespacePath, Regex.Escape(solutionName)).Count;
+
+            if (count > 1)
+                namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
             namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
 

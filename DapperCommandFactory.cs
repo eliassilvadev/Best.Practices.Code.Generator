@@ -1,4 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Exceptions;
+using BestPracticesCodeGenerator.Extensions;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,6 +28,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using System.Data;");
             content.AppendLine("using Best.Practices.Core.Cqrs.Dapper.EntityCommands;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Cqrs.Dapper.TableDefinitions;");
             content.AppendLine("");
 
             content.AppendLine(GetNameSpace(filePath));
@@ -61,7 +63,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}(IDbConnection connection, {originalClassName} affectedEntity) : base(connection, affectedEntity)");
             content.AppendLine("\t\t{");
-            content.AppendLine($"");
+            content.AppendLine($"\t\t\tAddTypeMapping(nameof({originalClassName}), {originalClassName}TableDefinition.TableDefinition);");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
@@ -84,6 +86,12 @@ namespace BestPracticesCodeGenerator
             var solutionPath = Path.GetDirectoryName(solution.FullPath);
 
             var namespacePath = filePath.Replace(solutionPath, "").Replace("\\", ".");
+            var solutionName = solution.Name.Replace(".sln", "");
+
+            int count = Regex.Matches(namespacePath, Regex.Escape(solutionName)).Count;
+
+            if (count > 1)
+                namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
             namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
 
