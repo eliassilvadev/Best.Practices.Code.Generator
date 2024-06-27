@@ -1,5 +1,7 @@
-﻿using BestPracticesCodeGenerator.Exceptions;
+﻿using BestPracticesCodeGenerator.Dtos;
+using BestPracticesCodeGenerator.Exceptions;
 using BestPracticesCodeGenerator.Extensions;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,7 +10,12 @@ namespace BestPracticesCodeGenerator
 {
     public static class DapperCommandFactory
     {
-        public static string Create(string fileContent, string filePath)
+        public static string Create(
+            string fileContent,
+            string filePath,
+            IList<PropertyInfo> classProperties,
+            IList<MethodInfo> methods,
+            FileContentGenerationOptions options)
         {
             Validate(fileContent);
 

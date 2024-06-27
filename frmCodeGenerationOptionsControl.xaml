@@ -108,8 +108,14 @@
                                 <TextBlock Text="Generate" Foreground="White"/>
                             </StackPanel>
                         </Button>
+                        <Button Name="BTN_DeleteGenerated" Click="BTN_DeleteGenerated_Click" Width="120" Height="20" Background="Transparent"  BorderThickness="0" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Resources\delete.png" Width="18" Height="18" Margin="0,0,5,0" />
+                                <TextBlock Text="Delete generated" Foreground="White"/>
+                            </StackPanel>
+                        </Button>
 
-                        <Button Name="BTN_Reload"  Click="BTN_Reload_Click" Width="70" Height="20" Background="Transparent"  BorderThickness="0" Margin="10,0,0,0" >
+                            <Button Name="BTN_Reload"  Click="BTN_Reload_Click" Width="70" Height="20" Background="Transparent"  BorderThickness="0" Margin="10,0,0,0" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="Resources\refresh.png" Width="18" Height="18" Margin="0,0,5,0" />
                                 <TextBlock Text="Reload" Foreground="White"/>

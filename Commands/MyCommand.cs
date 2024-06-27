@@ -1,7 +1,6 @@
 ﻿using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.IO;
 
 namespace BestPracticesCodeGenerator
 {
@@ -44,27 +43,22 @@ namespace BestPracticesCodeGenerator
 
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
-            frm.Solution = solution;
-            frm.OriginalFileName = GetSelectedFileName();// doc.FilePath;
-            frm.FileContent = File.ReadAllText(frm.OriginalFileName);
+            frm.CodeGenerationService = new Services.CodeGenerationService(solution, GetSelectedFileName());
 
-            if (!frm.FileContent.Contains("BaseEntity"))
+            if (!frm.CodeGenerationService.OriginalFileContent.Contains("BaseEntity"))
             {
-                await VS.MessageBox.ShowWarningAsync("MyCommand", "Selected class must inherit from 'BaseEntity'");
+                await VS.MessageBox.ShowWarningAsync("Best.Practices code generator", "Selected class must inherit from 'BaseEntity'");
                 return;
             }
 
-            frm.OriginalFilePath = Path.GetDirectoryName(frm.OriginalFileName);
-            frm.FileName = Path.GetFileName(frm.OriginalFileName);
-
-            frm.ClassProperties = frm.GetPropertiesInfo();
+            frm.ClassProperties = frm.CodeGenerationService.Properties;
 
             frm.GRD_Properties.ItemsSource = frm.ClassProperties;
             frm.BTN_Generate.IsEnabled = true;
             frm.BTN_Reload.IsEnabled = true;
             frm.PNL_InstructionsToLoadClass.Visibility = System.Windows.Visibility.Hidden;
             frm.PNL_GenerateClasses.Visibility = System.Windows.Visibility.Visible;
-            frm.LBL_ClassProperties.Text = "Properties from " + frm.FileName.Replace(":", "").Replace(".cs", "");
+            frm.LBL_ClassProperties.Text = "Properties from " + frm.CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");
 
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }

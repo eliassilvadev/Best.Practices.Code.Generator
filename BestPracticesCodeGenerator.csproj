@@ -47,12 +47,16 @@
   <ItemGroup>
     <Compile Include="Commands\MyContextMenuCommand.cs" />
     <Compile Include="DapperQueryProviderFactory.cs" />
+    <Compile Include="Dtos\FileContentGenerationOptions.cs" />
+    <Compile Include="Dtos\SolutionItensDto.cs" />
     <Compile Include="GetByIdUseCaseFactoryTestsFactory.cs" />
     <Compile Include="GetByIdUseCaseFactory.cs" />
     <Compile Include="EntityBuilderFactory.cs" />
     <Compile Include="InterfaceQueryProviderFactory.cs" />
     <Compile Include="ListItemOutputFactory.cs" />
     <Compile Include="ListItemOutputBuilderFactory.cs" />
+    <Compile Include="Services\FilesPathGeneratorService.cs" />
+    <Compile Include="Services\CodeGenerationService.cs" />
     <Compile Include="source.extension.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -60,12 +64,6 @@
     </Compile>
     <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
-    <Compile Include="frmCodeGenerationOptions2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmCodeGenerationOptions2.Designer.cs">
-      <DependentUpon>frmCodeGenerationOptions2.cs</DependentUpon>
-    </Compile>
     <Compile Include="frmCodeGenerationOptionsCommand.cs" />
     <Compile Include="frmCodeGenerationOptionsControl.xaml.cs">
       <DependentUpon>frmCodeGenerationOptionsControl.xaml</DependentUpon>
@@ -95,7 +93,6 @@
     <Compile Include="CreateUseCaseFactory.cs" />
     <Compile Include="RepositoryFactory.cs" />
     <Compile Include="InterfaceRepositoryFactory.cs" />
-    <Compile Include="BuilderFactory.cs" />
     <Compile Include="Dtos\PropertyInfo.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
@@ -121,6 +118,7 @@
       <Generator>VsixManifestGenerator</Generator>
       <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
+    <Resource Include="Resources\delete.png" />
     <Content Include="Resources\frmCodeGenerationOptionsCommand.png" />
     <Resource Include="Resources\generatefile.png" />
     <Content Include="Resources\Icon.png">
@@ -153,11 +151,6 @@
     <PackageReference Include="Community.VisualStudio.VSCT" Version="16.0.29.6" PrivateAssets="all" />
     <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.451" ExcludeAssets="Runtime" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5232" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="frmCodeGenerationOptions2.resx">
-      <DependentUpon>frmCodeGenerationOptions2.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="frmCodeGenerationOptionsControl.xaml">

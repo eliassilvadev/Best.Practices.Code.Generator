@@ -11,11 +11,12 @@ namespace BestPracticesCodeGenerator
 {
     public static class ControllerFactory
     {
-        public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath,
-            bool generateCreateUseCase,
-            bool generateUpdateUseCase,
-            bool generateDeleteUseCase,
-            bool generateGetUseCase)
+        public static string Create(
+            string fileContent,
+            string filePath,
+            IList<PropertyInfo> classProperties,
+            IList<MethodInfo> methods,
+            FileContentGenerationOptions options)
         {
             Validate(fileContent);
 
@@ -24,7 +25,7 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, classProperties, generateCreateUseCase, generateUpdateUseCase, generateDeleteUseCase, generateGetUseCase, filePath);
+            return CreateUseCaseClass(fileContent, originalClassName, classProperties, options.GenerateCreateUseCase, options.GenerateUpdateUseCase, options.GenerateDeleteUseCase, options.GenerateGetUseCase, filePath);
         }
 
         private static string CreateUseCaseClass(
@@ -255,18 +256,6 @@ namespace BestPracticesCodeGenerator
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
             return regex.Groups["Name"].Value.Replace(":", "");
-        }
-
-        private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
-            {
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
         }
     }
 }

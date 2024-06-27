@@ -11,7 +11,12 @@ namespace BestPracticesCodeGenerator
 {
     public static class RepositoryFactory
     {
-        public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
+        public static string Create(
+            string fileContent,
+            string filePath,
+            IList<PropertyInfo> classProperties,
+            IList<MethodInfo> methods,
+            FileContentGenerationOptions options)
         {
             Validate(fileContent);
 

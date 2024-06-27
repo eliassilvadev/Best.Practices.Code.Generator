@@ -11,11 +11,14 @@ namespace BestPracticesCodeGenerator
 {
     public static class EntityTestsFactory
     {
-        public static string Create(string fileContent, IList<PropertyInfo> classProperties, string filePath)
+        public static string Create(
+            string fileContent,
+            string filePath,
+            IList<PropertyInfo> classProperties,
+            IList<MethodInfo> methods,
+            FileContentGenerationOptions options)
         {
             Validate(fileContent);
-
-            var methods = GetMethodsInfo(fileContent);
 
             if (!classProperties.Any())
                 throw new ValidationException("It wasn't identified public properties to generate builder class");
@@ -133,32 +136,6 @@ namespace BestPracticesCodeGenerator
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
             return regex.Groups["Name"].Value.Replace(":", "");
-        }
-
-        private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
-            {
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
-        }
-
-        private static IList<MethodInfo> GetMethodsInfo(string fileContent)
-        {
-            var propertyes = new List<MethodInfo>();
-
-            var matches = Regex.Matches(fileContent, @"\b(public|internal|static|sealed|virtual|override|async)*\s*(\w+<.*?>|\w+)\s+(\w+)\s*\(.*?\)");
-
-            foreach (Match item in matches)
-            {
-                propertyes.Add(new MethodInfo(item.Groups[2].Value, item.Groups[3].Value));
-            }
-
-            return propertyes;
         }
     }
 }
