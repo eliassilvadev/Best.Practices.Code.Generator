@@ -101,8 +101,6 @@ namespace BestPracticesCodeGenerator
             {
                 WriteFileNewCreatedFileMessageToOutPutWindow(file, true);
             }
-
-            VS.MessageBox.ShowWarningAsync("Best.Practices generator", "Files generated with success.\nCheck out output window for details.").Wait();
         }
 
         private async Task GenerateAsync(bool onlyProcessFilePaths)
