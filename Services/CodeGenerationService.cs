@@ -145,7 +145,6 @@ namespace BestPracticesCodeGenerator.Services
 
             if (generateCreateUseCase || generateUpdateUseCase || generateDeleteUseCase || generateGetUseCase)
             {
-
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Output.cs");
                 Generatefile(newFileName, _filesPathGeneratorService.OutputDtoPath, OutputDtoFactory.Create, options);
 
@@ -154,6 +153,12 @@ namespace BestPracticesCodeGenerator.Services
 
                 newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "Controller.cs");
                 Generatefile(newFileName, _filesPathGeneratorService.ControllerPath, ControllerFactory.Create, options);
+            }
+
+            if (generateCreateUseCase || generateUpdateUseCase || generateGetUseCase)
+            {
+                Generatefile("Constants.cs", _filesPathGeneratorService.CommonConstantsPath, CommonConstantsFactory.Create, options);
+                Generatefile(PostmanCollectionFactory.GetCollectionFileName(), _filesPathGeneratorService.PostmanCollectionPath, PostmanCollectionFactory.Create, options);
             }
         }
 
@@ -237,15 +242,18 @@ namespace BestPracticesCodeGenerator.Services
         protected void Generatefile(string newFileName, string filePath, FileContentGenerationFunction generationFunction, FileContentGenerationOptions options)
         {
             var generatedFile = Path.Combine(filePath, newFileName);
+            var contentFile = "";
 
             if (!options.OnlyProcessFilePaths)
             {
-                File.WriteAllText(
-                    generatedFile,
-                    generationFunction(OriginalFileContent, filePath, Properties, Methods, options));
+                contentFile = generationFunction(OriginalFileContent, filePath, Properties, Methods, options);
+
+                if (!string.IsNullOrWhiteSpace(contentFile))
+                    File.WriteAllText(generatedFile, contentFile);
             }
 
-            GeneratedFiles.Add(generatedFile);
+            if (!newFileName.Equals("Constants.cs"))
+                GeneratedFiles.Add(generatedFile);
         }
 
         private void InstantiateSolutionProjects()

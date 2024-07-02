@@ -1,4 +1,5 @@
 ﻿using BestPracticesCodeGenerator.Dtos;
+using System.IO;
 using System.Linq;
 
 namespace BestPracticesCodeGenerator.Services
@@ -28,6 +29,8 @@ namespace BestPracticesCodeGenerator.Services
         public string InterfaceRepositoryPath { get; private set; }
         public string DapperQueryProviderPath { get; private set; }
         public string InterfaceQueryProviderPath { get; private set; }
+        public string CommonConstantsPath { get; private set; }
+        public string PostmanCollectionPath { get; private set; }
 
         public FilesPathGeneratorService(SolutionItensDto solutionItens, string originalFilePath)
         {
@@ -60,6 +63,29 @@ namespace BestPracticesCodeGenerator.Services
             InterfaceRepositoryPath = GetInterfaceRepositoryPath();
             DapperQueryProviderPath = GetDapperQueryProviderPath();
             InterfaceQueryProviderPath = GetInterfaceQueryProviderPath();
+            CommonConstantsPath = GetCommonConstantsPath();
+            PostmanCollectionPath = GetPostmanCollectionPath();
+        }
+
+        private string GetPostmanCollectionPath()
+        {
+            var solutionPath = Path.GetDirectoryName(_solutionItens.Solution.FullPath);
+
+            if (!solutionPath.EndsWith("\\"))
+                solutionPath += "\\";
+
+            return string.Concat(solutionPath, "Postman");
+        }
+
+        private string GetCommonConstantsPath()
+        {
+            var presentationProject = _solutionItens.Solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
+                .FirstOrDefault();
+
+            var commonFolder = presentationProject?.Children.Where(n => n.Text.Equals("Common"))
+                .FirstOrDefault();
+
+            return (commonFolder is not null) ? commonFolder.FullPath : string.Empty;
         }
 
         private string GetInterfaceQueryProviderPath()
