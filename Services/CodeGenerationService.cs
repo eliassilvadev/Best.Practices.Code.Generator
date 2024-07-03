@@ -252,7 +252,7 @@ namespace BestPracticesCodeGenerator.Services
                     File.WriteAllText(generatedFile, contentFile);
             }
 
-            if (!newFileName.Equals("Constants.cs"))
+            if (!newFileName.Equals("Constants.cs") && !newFileName.Contains("postman_collection"))
                 GeneratedFiles.Add(generatedFile);
         }
 

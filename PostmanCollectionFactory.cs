@@ -39,6 +39,8 @@ namespace BestPracticesCodeGenerator
         {
             var collectionName = GetCollectionFileName();
 
+            Directory.CreateDirectory(filePath);
+
             var collectionFile = Path.Combine(filePath, string.Concat(collectionName));
 
             var serializerSettings = new JsonSerializerSettings();
@@ -120,7 +122,7 @@ namespace BestPracticesCodeGenerator
                                 Body = new PostmanCollectionItemRequestBody()
                                 {
                                     Mode = "raw",
-                                    Raw = JsonConvert.SerializeObject(properties.ToDictionary(x => x.Name, x => ""), serializerSettings),
+                                    Raw = GetPropertiesJson(properties),
                                     Options = new PostmanCollectionItemRequestBodyOptions()
                                     {
                                         Raw = new PostmanCollectionItemRequestBodyOptionsRaw()
@@ -141,7 +143,7 @@ namespace BestPracticesCodeGenerator
                 }
                 else
                 {
-                    item.Request.Body.Raw = JsonConvert.SerializeObject(properties.ToDictionary(x => x.Name, x => ""), serializerSettings);
+                    item.Request.Body.Raw = GetPropertiesJson(properties);
                 }
             };
 
@@ -181,7 +183,7 @@ namespace BestPracticesCodeGenerator
                             Body = new PostmanCollectionItemRequestBody()
                             {
                                 Mode = "raw",
-                                Raw = JsonConvert.SerializeObject(properties.ToDictionary(x => x.Name, x => ""), serializerSettings),
+                                Raw = GetPropertiesJson(properties),
                                 Options = new PostmanCollectionItemRequestBodyOptions()
                                 {
                                     Raw = new PostmanCollectionItemRequestBodyOptionsRaw()
@@ -202,7 +204,7 @@ namespace BestPracticesCodeGenerator
                 }
                 else
                 {
-                    item.Request.Body.Raw = JsonConvert.SerializeObject(properties.ToDictionary(x => x.Name, x => ""), serializerSettings);
+                    item.Request.Body.Raw = GetPropertiesJson(properties);
                 }
             };
 
@@ -258,7 +260,7 @@ namespace BestPracticesCodeGenerator
                 }
 
                 PostmanCollectionItemItem getItems =
-                    collectionItem.Item.FirstOrDefault(p => p.Name == $"Get {originalClassName}ById");
+                    collectionItem.Item.FirstOrDefault(p => p.Name == $"Get {originalClassName}s");
 
                 if (getItems is null)
                 {
@@ -302,6 +304,15 @@ namespace BestPracticesCodeGenerator
             var postmanCollectionJson = JsonConvert.SerializeObject(postmanCollection, serializerSettings);
 
             return postmanCollectionJson;
+        }
+
+        private static string GetPropertiesJson(IList<PropertyInfo> properties)
+        {
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            serializerSettings.Formatting = Formatting.Indented;
+
+            return JsonConvert.SerializeObject(properties.ToDictionary(x => x.Name, x => ""), serializerSettings);
         }
 
         private static string GetNameRootProjectName()
