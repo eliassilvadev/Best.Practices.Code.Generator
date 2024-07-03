@@ -31,6 +31,8 @@ namespace BestPracticesCodeGenerator.Services
         public string InterfaceQueryProviderPath { get; private set; }
         public string CommonConstantsPath { get; private set; }
         public string PostmanCollectionPath { get; private set; }
+        public string DapperServiceCollectionExtentionsPath { get; private set; }
+        public string ApplicationServiceCollectionExtentionsPath { get; private set; }
 
         public FilesPathGeneratorService(SolutionItensDto solutionItens, string originalFilePath)
         {
@@ -65,6 +67,30 @@ namespace BestPracticesCodeGenerator.Services
             InterfaceQueryProviderPath = GetInterfaceQueryProviderPath();
             CommonConstantsPath = GetCommonConstantsPath();
             PostmanCollectionPath = GetPostmanCollectionPath();
+            DapperServiceCollectionExtentionsPath = GetDapperServiceCollectionExtentionsPath();
+            ApplicationServiceCollectionExtentionsPath = GetApplicationServiceCollectionExtentionsPath();
+        }
+
+        private string GetApplicationServiceCollectionExtentionsPath()
+        {
+            var coreProject = _solutionItens.Solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
+                  .FirstOrDefault();
+
+            var configurationsFolder = coreProject?.Children.Where(n => n.Text.Equals("Configurations"))
+                .FirstOrDefault();
+
+            return (configurationsFolder is not null) ? configurationsFolder.FullPath : _originalFilePath;
+        }
+
+        private string GetDapperServiceCollectionExtentionsPath()
+        {
+            var commandProviderProject = _solutionItens.Solution.Children.ToList().Where(c => c.Name.EndsWith(".Cqrs.Dapper"))
+               .FirstOrDefault();
+
+            var configurationsFolder = commandProviderProject?.Children.Where(n => n.Text.Equals("Configurations"))
+                .FirstOrDefault();
+
+            return (configurationsFolder is not null) ? configurationsFolder.FullPath : string.Empty;
         }
 
         private string GetPostmanCollectionPath()

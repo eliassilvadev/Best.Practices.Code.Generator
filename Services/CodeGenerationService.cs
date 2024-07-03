@@ -35,7 +35,7 @@ namespace BestPracticesCodeGenerator.Services
 
             _filesPathGeneratorService = new FilesPathGeneratorService(SolutionItens, originalFileFullPath);
 
-            OriginalFileContent = File.ReadAllText(OriginalFilePath);
+            OriginalFileContent = System.IO.File.ReadAllText(OriginalFilePath);
 
             OriginalFilePath = Path.GetDirectoryName(originalFileFullPath);
             FileName = Path.GetFileName(originalFileFullPath);
@@ -75,7 +75,7 @@ namespace BestPracticesCodeGenerator.Services
 
         public void ReloadFileInformations()
         {
-            OriginalFileContent = File.ReadAllText(OriginalFilePath);
+            OriginalFileContent = System.IO.File.ReadAllText(OriginalFilePath);
             FileName = Path.GetFileName(FileName);
 
             Methods = GetMethodsInfo();
@@ -130,6 +130,7 @@ namespace BestPracticesCodeGenerator.Services
             newFileName = string.Concat(GetTimeStamp(), "CreateTable", FileName.Substring(0, FileName.Length - 3), ".sql");
             Generatefile(newFileName, _filesPathGeneratorService.MigratonsPath, MigrationCreateTableFactory.Create, options);
 
+            Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.DapperServiceCollectionExtentionsPath, DapperServiceCollectionExtentionsFactory.Create, options);
 
             if (generateCreateUseCase)
                 GenerateCreateUseCase(options);
@@ -158,6 +159,8 @@ namespace BestPracticesCodeGenerator.Services
             if (generateCreateUseCase || generateUpdateUseCase || generateGetUseCase)
             {
                 Generatefile("Constants.cs", _filesPathGeneratorService.CommonConstantsPath, CommonConstantsFactory.Create, options);
+
+                Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.ApplicationServiceCollectionExtentionsPath, ApplicationServiceCollectionExtentionFactory.Create, options);
                 Generatefile(PostmanCollectionFactory.GetCollectionFileName(), _filesPathGeneratorService.PostmanCollectionPath, PostmanCollectionFactory.Create, options);
             }
         }
@@ -249,10 +252,10 @@ namespace BestPracticesCodeGenerator.Services
                 contentFile = generationFunction(OriginalFileContent, filePath, Properties, Methods, options);
 
                 if (!string.IsNullOrWhiteSpace(contentFile))
-                    File.WriteAllText(generatedFile, contentFile);
+                    System.IO.File.WriteAllText(generatedFile, contentFile);
             }
 
-            if (!newFileName.Equals("Constants.cs") && !newFileName.Contains("postman_collection"))
+            if (!newFileName.Equals("Constants.cs") && !newFileName.Contains("postman_collection") && !newFileName.Contains("ServiceCollectionExtentions.cs"))
                 GeneratedFiles.Add(generatedFile);
         }
 

@@ -46,6 +46,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\MyContextMenuCommand.cs" />
+    <Compile Include="ApplicationServiceCollectionExtentionFactory.cs" />
+    <Compile Include="DapperServiceCollectionExtentionsFactory.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemEventScriptPackage.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequestUrlQuery.cs" />
     <Compile Include="CommonConstantsFactory.cs" />
