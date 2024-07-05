@@ -61,12 +61,12 @@ namespace BestPracticesCodeGenerator
 
             var mapRepositoriesMethod = "public static void MapRepositories(this IServiceCollection service)";
 
-            insertIndex = serviceCollectionFileContent.IndexOf(mapRepositoriesMethod) + mapRepositoriesMethod.Length;
-            insertIndex = serviceCollectionFileContent.IndexOf('{', insertIndex);
+            insertIndex = newFileContent.IndexOf(mapRepositoriesMethod) + mapRepositoriesMethod.Length;
+            insertIndex = newFileContent.IndexOf('{', insertIndex);
 
             if ((insertIndex != -1) && repositoriesDependencyMappings.Length > 0)
             {
-                newFileContent = serviceCollectionFileContent.Insert(insertIndex + 1, "\n" + repositoriesDependencyMappings.ToString());
+                newFileContent = newFileContent.Insert(insertIndex + 1, "\n" + repositoriesDependencyMappings.ToString());
             }
 
             var commandProviderUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;";

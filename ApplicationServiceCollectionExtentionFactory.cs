@@ -115,6 +115,21 @@ namespace BestPracticesCodeGenerator
 
                 if (!newFileContent.Contains(usingValidatorsDeclaration) && !usingDeclarations.ToString().Contains(usingValidatorsDeclaration))
                     usingDeclarations.AppendLine($"{usingValidatorsDeclaration}");
+
+                var usingCoreUseCasesDeclaration = $"using Best.Practices.Core.Application.UseCases;";
+
+                if (!newFileContent.Contains(usingCoreUseCasesDeclaration) && !usingDeclarations.ToString().Contains(usingCoreUseCasesDeclaration))
+                    usingDeclarations.AppendLine($"{usingCoreUseCasesDeclaration}");
+
+                var usingCoreQueryProvidersDeclaration = $"using Best.Practices.Core.Application.Cqrs.QueryProviders;";
+
+                if (!newFileContent.Contains(usingCoreQueryProvidersDeclaration) && !usingDeclarations.ToString().Contains(usingCoreQueryProvidersDeclaration))
+                    usingDeclarations.AppendLine($"{usingCoreQueryProvidersDeclaration}");
+
+                var usingFluentValidationDeclaration = $"using FluentValidation;";
+
+                if (!newFileContent.Contains(usingFluentValidationDeclaration) && !usingDeclarations.ToString().Contains(usingFluentValidationDeclaration))
+                    usingDeclarations.AppendLine($"{usingFluentValidationDeclaration}");
             }
 
             var classNamespace = $"namespace {GetNameRootProjectName()}.Core.Configurations";
