@@ -16,11 +16,14 @@ namespace BestPracticesCodeGenerator
 
         public string GetSelectedFileName()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Document activeDocument = _dte.ActiveDocument;
 
             if (activeDocument != null)
             {
-                return activeDocument.FullName;
+                var fullPath = activeDocument.FullName;
+
+                return fullPath;
             }
 
             return null;

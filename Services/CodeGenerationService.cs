@@ -35,7 +35,7 @@ namespace BestPracticesCodeGenerator.Services
 
             _filesPathGeneratorService = new FilesPathGeneratorService(SolutionItens, originalFileFullPath);
 
-            OriginalFileContent = System.IO.File.ReadAllText(OriginalFilePath);
+            OriginalFileContent = System.IO.File.ReadAllText(originalFileFullPath);
 
             OriginalFilePath = Path.GetDirectoryName(originalFileFullPath);
             FileName = Path.GetFileName(originalFileFullPath);
@@ -75,7 +75,7 @@ namespace BestPracticesCodeGenerator.Services
 
         public void ReloadFileInformations()
         {
-            OriginalFileContent = System.IO.File.ReadAllText(OriginalFilePath);
+            OriginalFileContent = System.IO.File.ReadAllText(Path.Combine(OriginalFilePath, FileName));
             FileName = Path.GetFileName(FileName);
 
             Methods = GetMethodsInfo();

@@ -36,6 +36,7 @@ namespace BestPracticesCodeGenerator
 
             var commandProvidersDependencyMappings = new StringBuilder();
             var repositoriesDependencyMappings = new StringBuilder();
+            var usingDeclarations = new StringBuilder();
 
             var commandProviderMapping = $"service.AddScoped<I{originalClassName}CqrsCommandProvider, {originalClassName}CqrsCommandProvider>();";
 
@@ -68,7 +69,43 @@ namespace BestPracticesCodeGenerator
                 newFileContent = serviceCollectionFileContent.Insert(insertIndex + 1, "\n" + repositoriesDependencyMappings.ToString());
             }
 
+            var commandProviderUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;";
+
+            if (!newFileContent.Contains(commandProviderUsingDeclaration) && !usingDeclarations.ToString().Contains(commandProviderUsingDeclaration))
+                usingDeclarations.AppendLine($"{commandProviderUsingDeclaration}");
+
+            var repositoriesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories;";
+
+            if (!newFileContent.Contains(repositoriesUsingDeclaration) && !usingDeclarations.ToString().Contains(repositoriesUsingDeclaration))
+                usingDeclarations.AppendLine($"{repositoriesUsingDeclaration}");
+
+            var repositoriesInterfacesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;";
+
+            if (!newFileContent.Contains(repositoriesInterfacesUsingDeclaration) && !usingDeclarations.ToString().Contains(repositoriesInterfacesUsingDeclaration))
+                usingDeclarations.AppendLine($"{repositoriesInterfacesUsingDeclaration}");
+
+            var usingDapperCommandProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.CommandProviders;";
+
+            if (!newFileContent.Contains(usingDapperCommandProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperCommandProviderDeclaration))
+                usingDeclarations.AppendLine($"{usingDapperCommandProviderDeclaration}");
+
+            var classNamespace = $"namespace {GetNameRootProjectName()}.Cqrs.Dapper.Configurations";
+
+            insertIndex = newFileContent.IndexOf(classNamespace) - 1;
+
+            if ((insertIndex != -1) && usingDeclarations.Length > 0)
+            {
+                newFileContent = newFileContent.Insert(insertIndex, "\n" + usingDeclarations.ToString());
+            }
+
             return newFileContent;
+        }
+
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
         }
 
         private static string GetOriginalClassName(string fileContent)

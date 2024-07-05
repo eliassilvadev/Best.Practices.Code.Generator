@@ -31,6 +31,7 @@ namespace BestPracticesCodeGenerator
 
             var useCasesDependencyMappings = new StringBuilder();
             var validationsDependencyMappings = new StringBuilder();
+            var usingDeclarations = new StringBuilder();
 
             if (options.GenerateCreateUseCase)
             {
@@ -66,6 +67,14 @@ namespace BestPracticesCodeGenerator
                     useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
             }
 
+            if (options.GenerateGetUseCase)
+            {
+                var dependencyMapping = $"service.AddSingleton<GetPaginatedResultsUseCase<ICqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput>>();";
+
+                if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
+                    useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
+            }
+
             var mapUseCasesMethod = "public static void MapUseCases(this IServiceCollection service)";
 
             int insertIndex = serviceCollectionFileContent.IndexOf(mapUseCasesMethod) + mapUseCasesMethod.Length;
@@ -87,7 +96,44 @@ namespace BestPracticesCodeGenerator
                 newFileContent = newFileContent.Insert(insertIndex + 1, "\n" + validationsDependencyMappings.ToString());
             }
 
+            if (options.GenerateCreateUseCase || options.GenerateUpdateUseCase || options.GenerateDeleteUseCase)
+            {
+                var useCasesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Application.UseCases;";
+
+                if (!newFileContent.Contains(useCasesUsingDeclaration) && !usingDeclarations.ToString().Contains(useCasesUsingDeclaration))
+                    usingDeclarations.AppendLine($"{useCasesUsingDeclaration}");
+
+                var usingDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos;";
+
+                if (!newFileContent.Contains(usingDtosDeclaration) && !usingDeclarations.ToString().Contains(usingDtosDeclaration))
+                    usingDeclarations.AppendLine($"{usingDtosDeclaration}");
+            }
+
+            if (options.GenerateCreateUseCase || options.GenerateUpdateUseCase)
+            {
+                var usingValidatorsDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators;";
+
+                if (!newFileContent.Contains(usingValidatorsDeclaration) && !usingDeclarations.ToString().Contains(usingValidatorsDeclaration))
+                    usingDeclarations.AppendLine($"{usingValidatorsDeclaration}");
+            }
+
+            var classNamespace = $"namespace {GetNameRootProjectName()}.Core.Configurations";
+
+            insertIndex = newFileContent.IndexOf(classNamespace) - 1;
+
+            if ((insertIndex != -1) && usingDeclarations.Length > 0)
+            {
+                newFileContent = newFileContent.Insert(insertIndex, "\n" + usingDeclarations.ToString());
+            }
+
             return newFileContent;
+        }
+
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
         }
 
         private static string GetOriginalClassName(string fileContent)

@@ -158,7 +158,7 @@ namespace BestPracticesCodeGenerator
 
         private void BTN_GoToEntity_Click(object sender, RoutedEventArgs e)
         {
-            VS.Documents.OpenAsync(CodeGenerationService.OriginalFilePath).Wait();
+            VS.Documents.OpenAsync(Path.Combine(CodeGenerationService.OriginalFilePath, CodeGenerationService.FileName)).Wait();
         }
 
         private void SimulateKeyPress(Key key)
