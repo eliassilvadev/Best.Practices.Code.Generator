@@ -43,7 +43,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

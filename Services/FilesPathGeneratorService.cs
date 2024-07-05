@@ -175,7 +175,7 @@ namespace BestPracticesCodeGenerator.Services
             var domainFolder = coreProject?.Children.Where(n => n.Text.Equals("Domain"))
                 .FirstOrDefault();
 
-            var modelsFolder = domainFolder?.Children.Where(n => n.Text.Equals("Models"))
+            var modelsFolder = domainFolder?.Children.Where(n => n.Text.Equals("Entities"))
                 .FirstOrDefault();
 
             var buildersFolder = modelsFolder?.Children.Where(n => n.Text.Equals("Builders"))
@@ -282,7 +282,7 @@ namespace BestPracticesCodeGenerator.Services
             var domainFolder = coreTestsProject?.Children.Where(n => n.Text.Equals("Domain"))
                 .FirstOrDefault();
 
-            var modelsFolder = domainFolder?.Children.Where(n => n.Text.Equals("Models"))
+            var modelsFolder = domainFolder?.Children.Where(n => n.Text.Equals("Entities"))
                 .FirstOrDefault();
 
             return (modelsFolder is not null) ? modelsFolder.FullPath : _originalFilePath;

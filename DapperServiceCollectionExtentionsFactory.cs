@@ -38,12 +38,12 @@ namespace BestPracticesCodeGenerator
             var repositoriesDependencyMappings = new StringBuilder();
             var usingDeclarations = new StringBuilder();
 
-            var commandProviderMapping = $"service.AddScoped<I{originalClassName}CqrsCommandProvider, {originalClassName}CqrsCommandProvider>();";
+            var commandProviderMapping = $"service.AddSingleton<I{originalClassName}CqrsCommandProvider, {originalClassName}CqrsCommandProvider>();";
 
             if (!serviceCollectionFileContent.Contains(commandProviderMapping) && !commandProvidersDependencyMappings.ToString().Contains(commandProviderMapping))
                 commandProvidersDependencyMappings.AppendLine($"\t\t\t{commandProviderMapping}");
 
-            var repositoryMapping = $"service.AddScoped<I{originalClassName}Repository, {originalClassName}Repository>();";
+            var repositoryMapping = $"service.AddSingleton<I{originalClassName}Repository, {originalClassName}Repository>();";
 
             if (!serviceCollectionFileContent.Contains(repositoryMapping) && !repositoriesDependencyMappings.ToString().Contains(repositoryMapping))
                 repositoriesDependencyMappings.AppendLine($"\t\t\t{repositoryMapping}");

@@ -73,6 +73,11 @@ namespace BestPracticesCodeGenerator
 
                 if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
                     useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
+
+                dependencyMapping = $"service.AddSingleton<IValidator<GetPaginatedResultsInput>, GetPaginatedResultsInputValidator>();";
+
+                if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
+                    useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
             }
 
             var mapUseCasesMethod = "public static void MapUseCases(this IServiceCollection service)";
@@ -130,6 +135,16 @@ namespace BestPracticesCodeGenerator
 
                 if (!newFileContent.Contains(usingFluentValidationDeclaration) && !usingDeclarations.ToString().Contains(usingFluentValidationDeclaration))
                     usingDeclarations.AppendLine($"{usingFluentValidationDeclaration}");
+
+                var usingApplicationDtoInput = $"using Best.Practices.Core.Application.Dtos.Input;";
+
+                if (!newFileContent.Contains(usingApplicationDtoInput) && !usingDeclarations.ToString().Contains(usingApplicationDtoInput))
+                    usingDeclarations.AppendLine($"{usingApplicationDtoInput}");
+
+                var usingApplicationDtoInputValidators = $"using Best.Practices.Core.Application.Dtos.Validators;";
+
+                if (!newFileContent.Contains(usingApplicationDtoInputValidators) && !usingDeclarations.ToString().Contains(usingApplicationDtoInputValidators))
+                    usingDeclarations.AppendLine($"{usingApplicationDtoInputValidators}");
             }
 
             var classNamespace = $"namespace {GetNameRootProjectName()}.Core.Configurations";

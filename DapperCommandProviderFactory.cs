@@ -41,7 +41,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
             content.AppendLine("using MySql.Data.MySqlClient;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Cqrs.Dapper.EntityCommands;");
 

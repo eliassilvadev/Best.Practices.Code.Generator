@@ -43,7 +43,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Models.Builders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
             content.AppendLine($"using FluentValidation;");

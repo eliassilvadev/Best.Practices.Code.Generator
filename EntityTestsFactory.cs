@@ -39,7 +39,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));

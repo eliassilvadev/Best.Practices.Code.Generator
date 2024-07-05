@@ -36,7 +36,7 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("using Best.Practices.Core.Cqrs.Dapper.TableDefinitions;");
             content.AppendLine("using System.Data;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Models;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
