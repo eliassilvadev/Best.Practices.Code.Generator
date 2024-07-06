@@ -105,8 +105,13 @@ namespace BestPracticesCodeGenerator
                 propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
             }
 
+            int methodsAdded = 0;
+
             foreach (PropertyInfo property in propertiesToAdd)
             {
+                if (methodsAdded > 0)
+                    content.AppendLine();
+
                 content.AppendLine("\t\t[Fact]");
                 content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
@@ -118,7 +123,8 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                methodsAdded++;
             }
         }
 

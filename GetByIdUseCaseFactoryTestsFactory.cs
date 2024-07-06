@@ -112,14 +112,12 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Verify(x => x.GetById(id), Times.Once);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
             content.AppendLine($"\t\tprivate readonly Get{originalClassName}ByIdUseCase _useCase;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}CqrsQueryProvider> _{originalClassName.GetWordWithFirstLetterDown()}CqrsQueryProvider;");
-            content.AppendLine($"");
         }
 
         private static string GetNameSpace(string filePath)

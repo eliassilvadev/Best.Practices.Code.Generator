@@ -67,7 +67,6 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
-            content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}(IDbConnection connection, {originalClassName} affectedEntity) : base(connection, affectedEntity)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tAddTypeMapping(nameof({originalClassName}), {originalClassName}TableDefinition.TableDefinition);");
@@ -83,7 +82,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"");
             content.AppendLine($"\t\t\t return CommandDefinitions;");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static string GetNameSpace(string filePath)

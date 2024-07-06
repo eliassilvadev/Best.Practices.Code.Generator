@@ -125,16 +125,23 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
 
             var propertiesToPreventDuplication = properties
                 .Where(p => p.PreventDuplication)
                 .ToList();
 
+            if (propertiesToPreventDuplication.Count > 0)
+                content.AppendLine();
+
+            int testsMethodsAdded = 0;
+
             foreach (var property in propertiesToPreventDuplication)
             {
+                if (testsMethodsAdded > 0)
+                    content.AppendLine();
+
                 content.AppendLine("\t\t[Fact]");
-                content.AppendLine($"\t\tpublic async Task Execute_AlreadyExistsAnother{className}With{property.Name}_ReturnsInvalidInput()");
+                content.AppendLine($"\t\tpublic async Task Execute_AlreadyExistsAnother{className}With{property.Name}_ReturnsError()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
                 content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
@@ -151,7 +158,8 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
                 content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                testsMethodsAdded++;
             }
         }
 
@@ -161,7 +169,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
             content.AppendLine($"\t\tprivate readonly Mock<IValidator<Update{originalClassName}Input>> _validator;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
-            content.AppendLine("");
         }
 
         private static string GetNameSpace(string filePath)

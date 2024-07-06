@@ -78,7 +78,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tpublic {newClassName}(IValidator<Create{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_validator = validator;");
-            content.AppendLine("");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
             content.AppendLine("\t\t}");
             content.AppendLine();

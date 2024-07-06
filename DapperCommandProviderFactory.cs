@@ -90,8 +90,16 @@ namespace BestPracticesCodeGenerator
         {
             var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
 
+            if (propertiesToPreventDuplication.Count > 0)
+                content.AppendLine();
+
+            int generatedMthods = 0;
+
             foreach (var property in propertiesToPreventDuplication)
             {
+                if (generatedMthods > 0)
+                    content.AppendLine();
+
                 content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
@@ -120,15 +128,24 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine();
                 content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                generatedMthods++;
             }
 
             var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository)
                 .Except(propertiesToPreventDuplication)
                 .ToList();
 
+            if (propertiesToPreventDuplication.Count > 0)
+                content.AppendLine();
+
+            generatedMthods = 0;
+
             foreach (var property in propertiesToCreateGetMethod)
             {
+                if (generatedMthods > 0)
+                    content.AppendLine();
+
                 content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
@@ -142,7 +159,8 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine();
                 content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                generatedMthods++;
             }
         }
 
@@ -179,7 +197,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}>(sql, parameters);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)

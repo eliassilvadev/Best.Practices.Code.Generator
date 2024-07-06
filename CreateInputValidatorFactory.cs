@@ -65,20 +65,24 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName, IList<PropertyInfo> properties)
         {
-            content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}()");
             content.AppendLine("\t\t{");
 
+            int validationsAdded = 0;
+
             foreach (var item in properties)
             {
+                if (validationsAdded > 0)
+                    content.AppendLine("");
+
                 content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");
                 content.AppendLine($"\t\t\t\t.WithMessage(v => Constants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
-                content.AppendLine("");
+
+                validationsAdded++;
             }
 
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static string GetNameSpace(string filePath)

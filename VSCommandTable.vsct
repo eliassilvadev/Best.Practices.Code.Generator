@@ -20,13 +20,13 @@
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
     <Buttons>
-      <Button guid="BestPracticesCodeGenerator" id="MyCommand" priority="0x0100" type="Button">
+      <Button guid="BestPracticesCodeGenerator" id="SolutonItemContextMenuCommand" priority="0x0100" type="Button">
         <Parent guid="BestPracticesCodeGenerator" id="MyMenuGroup" />
         <Icon guid="ImageCatalogGuid" id="StatusInformation" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Generate Best.Practices code</ButtonText>
-          <LocCanonicalName>.BestPracticesCodeGenerator.MyCommand</LocCanonicalName>
+          <LocCanonicalName>.BestPracticesCodeGenerator.SolutonItemContextMenuCommand</LocCanonicalName>
         </Strings>
       </Button>
       <Button guid="guidBestPracticesCodeGeneratorPackageCmdSet" id="cmdidfrmCodeGenerationOptionsCommand" priority="0x0100" type="Button">
@@ -37,13 +37,13 @@
         </Strings>
       </Button>
 
-		<Button guid="BestPracticesCodeGenerator" id="MyContextMenuCommand" priority="0x0100" type="Button">
-			<Parent guid="BestPracticesCodeGenerator" id="EditorContextMenuGroup" />
+		<Button guid="BestPracticesCodeGenerator" id="FileEditorContextMenuCommand" priority="0x0100" type="Button">
+			<Parent guid="BestPracticesCodeGenerator" id="EditorContextMenuGroup" />			
 			<Icon guid="ImageCatalogGuid" id="StatusInformation" />
 			<CommandFlag>IconIsMoniker</CommandFlag>
 			<Strings>
 				<ButtonText>Generate Best.Practices code</ButtonText>
-				<LocCanonicalName>.BestPracticesCodeGenerator.MyContextMenuCommand</LocCanonicalName>
+				<LocCanonicalName>.BestPracticesCodeGenerator.FileEditorContextMenuCommand</LocCanonicalName>
 			</Strings>
 		</Button>
     </Buttons>
@@ -55,9 +55,9 @@
   <Symbols>
     <GuidSymbol name="BestPracticesCodeGenerator" value="{3a9553da-51e5-4df4-bb92-f7da402cc6ed}">
       <IDSymbol name="MyMenuGroup" value="0x0001" />
-      <IDSymbol name="MyCommand" value="0x0100" />
+      <IDSymbol name="SolutonItemContextMenuCommand" value="0x0100" />
 	    <IDSymbol name="EditorContextMenuGroup" value="0x0101" />
-		<IDSymbol name="MyContextMenuCommand" value="0x0102" />
+		<IDSymbol name="FileEditorContextMenuCommand" value="0x0102" />
     </GuidSymbol>
   
     <GuidSymbol value="{da2ba8c3-d21a-41e6-b2dd-fe079d5cbaf8}" name="guidBestPracticesCodeGeneratorPackageCmdSet">

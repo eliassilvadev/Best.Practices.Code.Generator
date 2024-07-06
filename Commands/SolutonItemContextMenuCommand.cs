@@ -4,12 +4,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BestPracticesCodeGenerator
 {
-    [Command(PackageIds.MyCommand)]
-    internal sealed class MyCommand : BaseCommand<MyCommand>
+    [Command(PackageIds.SolutonItemContextMenuCommand)]
+    internal sealed class SolutonItemContextMenuCommand : BaseCommand<SolutonItemContextMenuCommand>
     {
         private DTE2 _dte;
 
-        public MyCommand()
+        public SolutonItemContextMenuCommand()
         {
             _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
         }

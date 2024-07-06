@@ -2,12 +2,10 @@
 
 A Visual Studio extension that generates the code from clean architecture aproach based on a entity class and its properties.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/96le2gaaxp6u82wh?svg=true)](https://ci.appveyor.com/project/madskristensen/clearcomponentcache)
-
 Download the extension at the
-[VS Gallery](https://visualstudiogallery.msdn.microsoft.com/)
+
 or get the
-[nightly build](http://vsixgallery.com/extension//)
+
 
 ## What does it do?
 This extension generates code for classes based on the Best Practices framework for all Domain-Driven Design (DDD) layers and Clean Architecture layers.
@@ -36,6 +34,7 @@ From Application Layer:
 		- Validate if the entity exists on repository
 	- GetById Use case class
 		- Validate if the entity exists on repository
+	- GetPaginated use case
 From Infrastructore Layer:
 	- Dapper command class for the entity
 	- Dapper command provider class for the entity
@@ -63,19 +62,17 @@ From Presentation Layer:
 	- Delete entpoint
 	- GetById entpoint
 	- GetPaginated by filter entpoint
+	
+Additionals:
+ - Postman collection for the created endpoints that refer to:
+	- Create Use Case
+	- Update Use Case		
+	- Delete Use Case
+	- GetById Use case
+	- GetPaginated use case
 
 ## Using the extension
 In Visual Studio's top menu under Tools, a new command is now visible:
-
-![Menu Button](art/menu-button.png)
-
-Clicking the **Clear MEF Component Cache** button will prompt you to confirm
-and then restart Visual Studio.
-
-![Popup dialog](art/prompt.png)
-
-Restarting Visual Studio will automatically trigger a reconstruction of the
-MEF cache. This is a safe operation that doesn't cause any unwanted side effects.
 
 ## License
 [Apache 2.0](LICENSE) 

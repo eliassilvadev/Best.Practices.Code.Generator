@@ -97,8 +97,13 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t}");
             content.AppendLine();
 
+            int methodsAdded = 0;
+
             foreach (PropertyInfo property in properties)
             {
+                if (methodsAdded > 0)
+                    content.AppendLine();
+
                 content.AppendLine("\t\t[Fact]");
                 content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
@@ -110,14 +115,14 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                methodsAdded++;
             }
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
         {
             content.AppendLine($"\t\tprivate readonly Create{originalClassName}InputValidator _validator;");
-            content.AppendLine($"");
         }
 
         private static string GetNameSpace(string filePath)

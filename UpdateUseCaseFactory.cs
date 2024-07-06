@@ -108,7 +108,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("");
             content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output());");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)

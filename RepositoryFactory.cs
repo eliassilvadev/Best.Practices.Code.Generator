@@ -75,7 +75,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}CqrsCommandProvider = commandProvider;");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GenerateMethodsToGetEntity(StringBuilder content, string className, IList<PropertyInfo> properties)

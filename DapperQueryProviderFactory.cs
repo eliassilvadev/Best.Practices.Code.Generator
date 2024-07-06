@@ -77,7 +77,6 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
-            content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}(IDbConnection connection) : base(connection)");
             content.AppendLine("\t\t{");
             content.AppendLine("\t\t}");
@@ -99,7 +98,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine();
             content.AppendLine($"\t\t\treturn await _connection.QueryFirstOrDefaultAsync<{originalClassName}Output>(sqlCommand, parameters);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)

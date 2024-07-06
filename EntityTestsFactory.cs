@@ -78,20 +78,28 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_entity = new {originalClassName}();");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GenerateTestMethods(StringBuilder content, string className, IList<PropertyInfo> properties, IList<MethodInfo> methods)
         {
+            if (methods.Count > 0)
+                content.AppendLine();
+
+            int testMethodsAdded = 0;
+
             foreach (var method in methods)
             {
+                if (testMethodsAdded > 0)
+                    content.AppendLine();
+
                 content.AppendLine("\t\t[Fact]");
                 content.AppendLine($"\t\tpublic void {method.Name}_EverythingIsOk_ReturnsSuccess()");
                 content.AppendLine("\t\t{");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\t_entity.{method.Name}();");
                 content.AppendLine("\t\t}");
-                content.AppendLine();
+
+                testMethodsAdded++;
             }
         }
 

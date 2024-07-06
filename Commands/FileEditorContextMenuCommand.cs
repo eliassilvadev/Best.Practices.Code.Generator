@@ -4,12 +4,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BestPracticesCodeGenerator
 {
-    [Command(PackageIds.MyContextMenuCommand)]
-    internal sealed class MyContextMenuCommand : BaseCommand<MyContextMenuCommand>
+    [Command(PackageIds.FileEditorContextMenuCommand)]
+    internal sealed class FileEditorContextMenuCommand : BaseCommand<FileEditorContextMenuCommand>
     {
         private DTE2 _dte;
 
-        public MyContextMenuCommand()
+        public FileEditorContextMenuCommand()
         {
             _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
         }

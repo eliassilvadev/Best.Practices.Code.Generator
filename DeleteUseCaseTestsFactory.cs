@@ -113,7 +113,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(id), Times.Once);");
             content.AppendLine("\t\t}");
-            content.AppendLine();
         }
 
         private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
@@ -121,7 +120,6 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\tprivate readonly Delete{originalClassName}UseCase _useCase;");
             content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
-            content.AppendLine($"");
         }
 
         private static string GetNameSpace(string filePath)
