@@ -69,7 +69,7 @@ namespace BestPracticesCodeGenerator
 
             if (options.GenerateGetUseCase)
             {
-                var dependencyMapping = $"service.AddSingleton<GetPaginatedResultsUseCase<ICqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput>>();";
+                var dependencyMapping = $"service.AddSingleton<GetPaginatedResultsUseCase<IListItemOutputCqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput>>();";
 
                 if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
                     useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");

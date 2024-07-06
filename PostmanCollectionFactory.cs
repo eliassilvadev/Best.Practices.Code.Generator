@@ -269,11 +269,11 @@ namespace BestPracticesCodeGenerator
                         Name = $"Get {originalClassName}s",
                         Request = new PostmanCollectionItemRequest()
                         {
-                            Method = "GET",
+                            Method = "POST",
                             Header = new List<string>(),
                             Url = new PostmanCollectionItemRequestUrl()
                             {
-                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName}s/get{originalClassName}s?itemsPerPage=10&pageNumber=1&filterValue=Name",
+                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName}s/get-by-filter?itemsPerPage=10&pageNumber=1&filterValue=Name",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
                                 Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"get{originalClassName.GetWordWithFirstLetterDown()}s" },
                                 Query = new List<PostmanCollectionItemRequestUrlQuery>()

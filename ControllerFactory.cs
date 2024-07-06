@@ -113,7 +113,7 @@ namespace BestPracticesCodeGenerator
             if (generateGetUseCase)
             {
                 content.AppendLine($"\t\t\tGet{originalClassName}ByIdUseCase get{originalClassName}ByIdUseCase,");
-                content.AppendLine($"\t\t\tGetPaginatedResultsUseCase<ICqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput> getPaginated{originalClassName}UseCase)");
+                content.AppendLine($"\t\t\tGetPaginatedResultsUseCase<IListItemOutputCqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput> getPaginated{originalClassName}UseCase)");
             }
 
             content.AppendLine("\t\t\t: base(httpContextAccessor)");
@@ -190,7 +190,7 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine($"\t\t\treturn OutputConverter(await _get{originalClassName}ByIdUseCase.ExecuteAsync(id));");
                 content.AppendLine("\t\t}");
                 content.AppendLine();
-                content.AppendLine($"\t\t[HttpPost]");
+                content.AppendLine($"\t\t[HttpPost(\"get-by-filter\")]");
                 content.AppendLine($"\t\t[ProducesResponseType(typeof(IEnumerable<{originalClassName}ListItemOutput>), StatusCodes.Status200OK)]");
                 content.AppendLine($"\t\tpublic async Task<IActionResult> GetPaginated{originalClassName}(GetPaginatedResultsInput input)");
                 content.AppendLine("\t\t{");
@@ -214,7 +214,7 @@ namespace BestPracticesCodeGenerator
             if (generateGetUseCase)
             {
                 content.AppendLine($"\t\tprivate readonly Get{originalClassName}ByIdUseCase _get{originalClassName}ByIdUseCase;");
-                content.AppendLine($"\t\tprivate readonly GetPaginatedResultsUseCase<ICqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput> _getPaginated{originalClassName}UseCase;");
+                content.AppendLine($"\t\tprivate readonly GetPaginatedResultsUseCase<IListItemOutputCqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutput> _getPaginated{originalClassName}UseCase;");
             }
 
             content.AppendLine($"");

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace BestPracticesCodeGenerator
 {
-    public static class InterfaceQueryProviderFactory
+    public static class InterfaceListItemOutputQueryProviderFactory
     {
         public static string Create(
             string fileContent,
@@ -41,9 +41,9 @@ namespace BestPracticesCodeGenerator
 
             content.AppendLine("{");
 
-            var newClassName = string.Concat("I", originalClassName, "CqrsQueryProvider");
+            var newClassName = string.Concat("I", originalClassName, "ListItemOutputCqrsQueryProvider");
 
-            content.AppendLine(string.Concat("\tpublic interface ", newClassName, $" : ICqrsQueryProvider<{originalClassName}Output>"));
+            content.AppendLine(string.Concat("\tpublic interface ", newClassName, $" : IListItemOutputCqrsQueryProvider<{originalClassName}ListItemOutput>"));
 
             content.AppendLine("\t{");
 

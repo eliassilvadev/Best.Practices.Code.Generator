@@ -35,6 +35,7 @@ namespace BestPracticesCodeGenerator
             var serviceCollectionFileContent = File.ReadAllText(serviceCollectionFile);
 
             var commandProvidersDependencyMappings = new StringBuilder();
+            var queryProvidersDependencyMappings = new StringBuilder();
             var repositoriesDependencyMappings = new StringBuilder();
             var usingDeclarations = new StringBuilder();
 
@@ -42,6 +43,21 @@ namespace BestPracticesCodeGenerator
 
             if (!serviceCollectionFileContent.Contains(commandProviderMapping) && !commandProvidersDependencyMappings.ToString().Contains(commandProviderMapping))
                 commandProvidersDependencyMappings.AppendLine($"\t\t\t{commandProviderMapping}");
+
+            var queryProviderMapping = $"service.AddSingleton<I{originalClassName}CqrsQueryProvider, {originalClassName}CqrsQueryProvider>();";
+
+            if (!serviceCollectionFileContent.Contains(queryProviderMapping) && !queryProvidersDependencyMappings.ToString().Contains(commandProviderMapping))
+                queryProvidersDependencyMappings.AppendLine($"\t\t\t{queryProviderMapping}");
+
+            queryProviderMapping = $"service.AddSingleton<I{originalClassName}ListItemOutputCqrsQueryProvider, {originalClassName}ListItemOutputCqrsQueryProvider>();";
+
+            if (!serviceCollectionFileContent.Contains(queryProviderMapping) && !queryProvidersDependencyMappings.ToString().Contains(commandProviderMapping))
+                queryProvidersDependencyMappings.AppendLine($"\t\t\t{queryProviderMapping}");
+
+            queryProviderMapping = $"service.AddSingleton<IListItemOutputCqrsQueryProvider<{originalClassName}ListItemOutput>, {originalClassName}ListItemOutputCqrsQueryProvider>();";
+
+            if (!serviceCollectionFileContent.Contains(queryProviderMapping) && !queryProvidersDependencyMappings.ToString().Contains(commandProviderMapping))
+                queryProvidersDependencyMappings.AppendLine($"\t\t\t{queryProviderMapping}");
 
             var repositoryMapping = $"service.AddSingleton<I{originalClassName}Repository, {originalClassName}Repository>();";
 
@@ -57,6 +73,16 @@ namespace BestPracticesCodeGenerator
             if ((insertIndex != -1) && commandProvidersDependencyMappings.Length > 0)
             {
                 newFileContent = serviceCollectionFileContent.Insert(insertIndex + 1, "\n" + commandProvidersDependencyMappings.ToString());
+            }
+
+            var mapQueryProvidersMethod = "public static void MapQueryProviders(this IServiceCollection service)";
+
+            insertIndex = newFileContent.IndexOf(mapQueryProvidersMethod) + mapQueryProvidersMethod.Length;
+            insertIndex = newFileContent.IndexOf('{', insertIndex);
+
+            if ((insertIndex != -1) && queryProvidersDependencyMappings.Length > 0)
+            {
+                newFileContent = newFileContent.Insert(insertIndex + 1, "\n" + queryProvidersDependencyMappings.ToString());
             }
 
             var mapRepositoriesMethod = "public static void MapRepositories(this IServiceCollection service)";
@@ -88,6 +114,26 @@ namespace BestPracticesCodeGenerator
 
             if (!newFileContent.Contains(usingDapperCommandProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperCommandProviderDeclaration))
                 usingDeclarations.AppendLine($"{usingDapperCommandProviderDeclaration}");
+
+            var usingDapperQueryProviderDeclaration = $"using Best.Practices.Core.Application.Cqrs.QueryProviders;";
+
+            if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
+                usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
+
+            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;";
+
+            if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
+                usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
+
+            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.QueryProviders;";
+
+            if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
+                usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
+
+            var usingApplicationDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos;";
+
+            if (!newFileContent.Contains(usingApplicationDtosDeclaration) && !usingDeclarations.ToString().Contains(usingApplicationDtosDeclaration))
+                usingDeclarations.AppendLine($"{usingApplicationDtosDeclaration}");
 
             var classNamespace = $"namespace {GetNameRootProjectName()}.Cqrs.Dapper.Configurations";
 

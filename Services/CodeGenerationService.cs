@@ -176,8 +176,14 @@ namespace BestPracticesCodeGenerator.Services
             newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
             Generatefile(newFileName, _filesPathGeneratorService.InterfaceQueryProviderPath, InterfaceQueryProviderFactory.Create, options);
 
+            newFileName = string.Concat("I", FileName.Substring(0, FileName.Length - 3), "ListItemOutputCqrsQueryProvider.cs");
+            Generatefile(newFileName, _filesPathGeneratorService.InterfaceListItemOutputQueryProviderPath, InterfaceListItemOutputQueryProviderFactory.Create, options);
+
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "CqrsQueryProvider.cs");
             Generatefile(newFileName, _filesPathGeneratorService.DapperQueryProviderPath, DapperQueryProviderFactory.Create, options);
+
+            newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutputCqrsQueryProvider.cs");
+            Generatefile(newFileName, _filesPathGeneratorService.DapperListItemOutputQueryProviderPath, DapperListItemOutputQueryProviderFactory.Create, options);
 
             newFileName = string.Concat(FileName.Substring(0, FileName.Length - 3), "ListItemOutputBuilder.cs");
             Generatefile(newFileName, _filesPathGeneratorService.OutputBuilderPath, ListItemOutputBuilderFactory.Create, options);

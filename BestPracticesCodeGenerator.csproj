@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Commands\MyContextMenuCommand.cs" />
     <Compile Include="ApplicationServiceCollectionExtentionFactory.cs" />
+    <Compile Include="DapperListItemOutputQueryProviderFactory.cs" />
     <Compile Include="DapperServiceCollectionExtentionsFactory.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemEventScriptPackage.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequestUrlQuery.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Dtos\Postman\PostmanCollectionItemResponse.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequest.cs" />
     <Compile Include="Dtos\SolutionItensDto.cs" />
+    <Compile Include="InterfaceListItemOutputQueryProviderFactory.cs" />
     <Compile Include="PostmanCollectionFactory.cs" />
     <Compile Include="GetByIdUseCaseFactoryTestsFactory.cs" />
     <Compile Include="GetByIdUseCaseFactory.cs" />

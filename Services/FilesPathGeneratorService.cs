@@ -28,7 +28,9 @@ namespace BestPracticesCodeGenerator.Services
         public string InterfaceCommandProviderPath { get; private set; }
         public string InterfaceRepositoryPath { get; private set; }
         public string DapperQueryProviderPath { get; private set; }
+        public string DapperListItemOutputQueryProviderPath { get; private set; }
         public string InterfaceQueryProviderPath { get; private set; }
+        public string InterfaceListItemOutputQueryProviderPath { get; private set; }
         public string CommonConstantsPath { get; private set; }
         public string PostmanCollectionPath { get; private set; }
         public string DapperServiceCollectionExtentionsPath { get; private set; }
@@ -64,11 +66,23 @@ namespace BestPracticesCodeGenerator.Services
             InterfaceCommandProviderPath = GetInterfaceCommandProviderPath();
             InterfaceRepositoryPath = GetInterfaceRepositoryPath();
             DapperQueryProviderPath = GetDapperQueryProviderPath();
+            DapperListItemOutputQueryProviderPath = GetDapperListItemOutputQueryProviderPath();
             InterfaceQueryProviderPath = GetInterfaceQueryProviderPath();
+            InterfaceListItemOutputQueryProviderPath = GetInterfaceListItemOutputQueryProviderPath();
             CommonConstantsPath = GetCommonConstantsPath();
             PostmanCollectionPath = GetPostmanCollectionPath();
             DapperServiceCollectionExtentionsPath = GetDapperServiceCollectionExtentionsPath();
             ApplicationServiceCollectionExtentionsPath = GetApplicationServiceCollectionExtentionsPath();
+        }
+
+        private string GetInterfaceListItemOutputQueryProviderPath()
+        {
+            return GetInterfaceQueryProviderPath();
+        }
+
+        private string GetDapperListItemOutputQueryProviderPath()
+        {
+            return GetDapperQueryProviderPath();
         }
 
         private string GetApplicationServiceCollectionExtentionsPath()
