@@ -129,7 +129,7 @@
     <Resource Include="Resources\open.png" />
     <Resource Include="Resources\refresh.png" />
     <Resource Include="Resources\save.png" />
-    <Content Include="ProjectTemplates\Best.Flag.Core.zip">
+    <Content Include="ProjectTemplates\BPTemplate.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

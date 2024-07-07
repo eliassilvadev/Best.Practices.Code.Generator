@@ -85,7 +85,7 @@ namespace BestPracticesCodeGenerator
                 postmanCollection.Item.Add(collectionItem);
             }
 
-            if (options.GenerateGetUseCase)
+            if (options.GenerateCreateUseCase)
             {
                 PostmanCollectionItemItem item =
                     collectionItem.Item.FirstOrDefault(p => p.Name == $"Create {originalClassName}");

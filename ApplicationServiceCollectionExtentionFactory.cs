@@ -78,6 +78,11 @@ namespace BestPracticesCodeGenerator
 
                 if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
                     useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
+
+                dependencyMapping = $"service.AddSingleton<Get{originalClassName}ByIdUseCase>();";
+
+                if (!serviceCollectionFileContent.Contains(dependencyMapping) && !useCasesDependencyMappings.ToString().Contains(dependencyMapping))
+                    useCasesDependencyMappings.AppendLine($"\t\t\t{dependencyMapping}");
             }
 
             var mapUseCasesMethod = "public static void MapUseCases(this IServiceCollection service)";
