@@ -127,7 +127,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine("\t\t}");
 
             var propertiesToPreventDuplication = properties
-                .Where(p => p.PreventDuplication)
+                .Where(p => p.PreventDuplication && !p.IsListProperty())
                 .ToList();
 
             if (propertiesToPreventDuplication.Count > 0)

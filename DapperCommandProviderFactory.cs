@@ -88,7 +88,7 @@ namespace BestPracticesCodeGenerator
 
         private static void GenerateMethodsToGetEntity(StringBuilder content, string originalClassName, string className, IList<PropertyInfo> properties)
         {
-            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication && !p.IsListProperty()).ToList();
 
             if (propertiesToPreventDuplication.Count > 0)
                 content.AppendLine();
@@ -132,7 +132,7 @@ namespace BestPracticesCodeGenerator
                 generatedMthods++;
             }
 
-            var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository)
+            var propertiesToCreateGetMethod = properties.Where(p => p.GenerateGetMethodOnRepository && !p.IsListProperty())
                 .Except(propertiesToPreventDuplication)
                 .ToList();
 

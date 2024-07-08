@@ -76,7 +76,7 @@ namespace BestPracticesCodeGenerator
                 if (item.Name.Equals("Id"))
                     content.AppendLine("\t\t[JsonIgnore]");
 
-                content.AppendLine(string.Concat($"\t\tpublic {item.Type} {item.Name}", " { get; set; }"));
+                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Update", "Input")} {item.Name}", " { get; set; }"));
             }
         }
 

@@ -90,7 +90,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\t_validator.ValidateAndThrow(input);");
             content.AppendLine("");
 
-            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication && !p.IsListProperty()).ToList();
 
             foreach (var property in propertiesToPreventDuplication)
             {

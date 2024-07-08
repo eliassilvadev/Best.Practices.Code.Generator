@@ -68,7 +68,7 @@ namespace BestPracticesCodeGenerator
 
             foreach (var item in properties)
             {
-                content.AppendLine(string.Concat($"\t\tpublic {item.Type} {item.Name}", " { get; init; }"));
+                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name}", " { get; init; }"));
             }
         }
 

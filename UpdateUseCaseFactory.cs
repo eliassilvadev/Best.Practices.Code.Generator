@@ -93,7 +93,7 @@ namespace BestPracticesCodeGenerator
             content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id));");
             content.AppendLine("");
 
-            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication).ToList();
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication && !p.IsListProperty()).ToList();
 
             foreach (var property in propertiesToPreventDuplication)
             {

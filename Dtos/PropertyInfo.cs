@@ -1,4 +1,6 @@
-﻿namespace BestPracticesCodeGenerator.Dtos
+﻿using BestPracticesCodeGenerator.Extensions;
+
+namespace BestPracticesCodeGenerator.Dtos
 {
     public class PropertyInfo
     {
@@ -10,6 +12,28 @@
         {
             Type = type;
             Name = name;
+        }
+
+        public bool IsListProperty()
+        {
+            return Type.Contains("EntityList") || Type.Contains("List") || Type.Contains("Enumerable") || Type.Contains("Collection");
+        }
+
+        public string GetTypeConvertingToDtoWhenIsComplex(string prefixClassName = "", string sufixClassName = "")
+        {
+            var type = Type;
+
+            type = type.Replace("IEntityList", "IList");
+            type = type.Replace("EntityList", "List");
+
+            if (type.Contains("<") && type.Contains(">") && (!string.IsNullOrWhiteSpace(prefixClassName) || !string.IsNullOrWhiteSpace(sufixClassName)))
+            {
+                var className = type.GetSubstringBetween("<", ">");
+
+                type = type.Replace(className, prefixClassName + className + sufixClassName);
+            }
+
+            return type;
         }
     }
 }

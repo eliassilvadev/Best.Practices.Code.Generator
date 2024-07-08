@@ -44,7 +44,7 @@ namespace BestPracticesCodeGenerator
 
             foreach (var property in properties)
             {
-                if (property.PreventDuplication)
+                if (property.PreventDuplication && !property.IsListProperty())
                 {
                     constantName = $"A{originalClassName}With{property.Name}AlreadyExists";
 

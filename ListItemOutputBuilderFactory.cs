@@ -116,7 +116,7 @@ namespace BestPracticesCodeGenerator
 
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.Type} {item.Name.GetWordWithFirstLetterDown()})");
+                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
                 content.AppendLine("\t\t\treturn this;");
@@ -135,7 +135,7 @@ namespace BestPracticesCodeGenerator
 
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tprivate {item.Type} _{item.Name.GetWordWithFirstLetterDown()};");
+                content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} _{item.Name.GetWordWithFirstLetterDown()};");
             }
         }
 

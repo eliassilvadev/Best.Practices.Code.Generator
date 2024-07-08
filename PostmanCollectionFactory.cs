@@ -275,7 +275,7 @@ namespace BestPracticesCodeGenerator
                             {
                                 Raw = $"{{apiUrlPrefix}}/api/{originalClassName}s/get-by-filter?itemsPerPage=10&pageNumber=1&filterValue=Name",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
-                                Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"get{originalClassName.GetWordWithFirstLetterDown()}s" },
+                                Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"get-by-filter" },
                                 Query = new List<PostmanCollectionItemRequestUrlQuery>()
                                     {
                                         new PostmanCollectionItemRequestUrlQuery()
