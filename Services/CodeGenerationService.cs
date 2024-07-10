@@ -53,6 +53,8 @@ namespace BestPracticesCodeGenerator.Services
 
             foreach (Match item in matches)
             {
+                var type = item.Groups["Type"].Value;
+
                 propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
             }
 
@@ -128,6 +130,14 @@ namespace BestPracticesCodeGenerator.Services
             Generatefile(newFileName, _filesPathGeneratorService.EntityTestsPath, EntityTestsFactory.Create, options);
 
             newFileName = string.Concat(GetTimeStamp(), "CreateTable", FileName.Substring(0, FileName.Length - 3), ".sql");
+
+            var partialScriptName = $"*{FileName.Substring(0, FileName.Length - 3)}*";
+
+            string[] files = Directory.GetFiles(_filesPathGeneratorService.MigratonsPath, partialScriptName);
+
+            if (files.Any())
+                newFileName = files[0];
+
             Generatefile(newFileName, _filesPathGeneratorService.MigratonsPath, MigrationCreateTableFactory.Create, options);
 
             Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.DapperServiceCollectionExtentionsPath, DapperServiceCollectionExtentionsFactory.Create, options);

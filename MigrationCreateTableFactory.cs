@@ -23,10 +23,10 @@ namespace BestPracticesCodeGenerator
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateTable(fileContent, originalClassName, classProperties, filePath);
+            return CreateTable(fileContent, originalClassName, classProperties, ref filePath);
         }
 
-        private static string CreateTable(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateTable(string fileContent, string originalClassName, IList<PropertyInfo> properties, ref string filePath)
         {
             var content = new StringBuilder();
 
@@ -39,9 +39,37 @@ namespace BestPracticesCodeGenerator
                 content.AppendLine($"  `Id` VARCHAR(36) NOT NULL,");
             }
 
-            foreach (var property in properties)
+            var propertiesToGenerateTableFields = properties.Where(x => !x.IsListProperty())
+                .ToList();
+
+            foreach (var property in propertiesToGenerateTableFields)
             {
-                content.AppendLine($"  `{property.Name}`{property.Type} NOT NULL,");
+                if (property.IsPrimitive())
+                    content.AppendLine($"  `{property.Name}`{property.Type} NOT NULL,");
+                else
+                    content.AppendLine($"  `{property.Type}Id` VARCHAR(36) NOT NULL,");
+            }
+
+            var preventDuplicationProperties = propertiesToGenerateTableFields.Where(x => x.PreventDuplication)
+                .ToList();
+
+            foreach (var property in preventDuplicationProperties)
+            {
+                content.AppendLine($"  UNIQUE KEY `{originalClassName}{property.Name}_UNIQUE` (`{property.Type}`),");
+            }
+
+            var nestedProperties = propertiesToGenerateTableFields.Where(x => !x.IsPrimitive())
+               .ToList();
+
+            int addedProperties = 0;
+
+            foreach (var property in nestedProperties)
+            {
+                var separator = (addedProperties > 0) ? "," : "";
+
+                content.AppendLine($"  CONSTRAINT `FK_{originalClassName}{property.Type}Id_{property.Type}` FOREIGN KEY (`{property.Type}Id`) REFERENCES `{property.Type}` (`Id`) ON UPDATE CASCADE{separator}");
+
+                addedProperties++;
             }
 
             content.AppendLine($"  PRIMARY KEY (`Id`));");

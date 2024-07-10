@@ -1,9 +1,19 @@
 ﻿using BestPracticesCodeGenerator.Extensions;
+using System.Collections.Generic;
 
 namespace BestPracticesCodeGenerator.Dtos
 {
     public class PropertyInfo
     {
+
+        private static readonly HashSet<string> PrimitiveTypeNames = new HashSet<string>
+        {
+            "Boolean", "Byte", "SByte", "Char",
+            "Decimal", "Double", "Single",
+            "Int32", "UInt32", "Int64", "UInt64",
+            "Int16", "UInt16", "String", "string", "DateTime", "DateTimeOffset"
+        };
+
         public string Type { get; }
         public string Name { get; }
         public bool GenerateGetMethodOnRepository { get; set; }
@@ -12,6 +22,11 @@ namespace BestPracticesCodeGenerator.Dtos
         {
             Type = type;
             Name = name;
+        }
+
+        public bool IsPrimitive()
+        {
+            return PrimitiveTypeNames.Contains(Type);
         }
 
         public bool IsListProperty()
@@ -26,12 +41,14 @@ namespace BestPracticesCodeGenerator.Dtos
             type = type.Replace("IEntityList", "IList");
             type = type.Replace("EntityList", "List");
 
+            var className = type;
+
             if (type.Contains("<") && type.Contains(">") && (!string.IsNullOrWhiteSpace(prefixClassName) || !string.IsNullOrWhiteSpace(sufixClassName)))
             {
-                var className = type.GetSubstringBetween("<", ">");
-
-                type = type.Replace(className, prefixClassName + className + sufixClassName);
+                className = type.GetSubstringBetween("<", ">");
             }
+
+            type = type.Replace(className, prefixClassName + className + sufixClassName);
 
             return type;
         }
