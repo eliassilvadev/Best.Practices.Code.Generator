@@ -89,24 +89,24 @@ You can generate necessary files to all layers for each entity(model) you want.
 
 ## Using the extension
 Create a new project and select the Best.Practices solution template
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/1%20-%20NewProject.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/1%20-%20NewProject.jpg)
 
 A solution will be created with a suggested structure
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/2%20-%20SolutionTemplate.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/2%20-%20SolutionTemplate.jpg)
 
 After creating an entity class, inherited from [BaseEntity](https://github.com/eliassilvadev/best-practices/blob/main/Best.Practices.Core/Domain/Entities/BaseEntity.cs)
 Right-click on the entity file in Solution Explorer or the Entity class editor
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/4%20-%20RightClickMenu.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/4%20-%20RightClickMenu.jpg)
 
 A tool window with a few options will appear. Select the options according to your needs and click on the 'Generate' button
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/5%20-%20ToolWindowOptio%20ns.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/5%20-%20ToolWindowOptio%20ns.jpg)
 
 The files, including classes and interfaces, migration files, and Postman collection file will be created. You can see it on the output window
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/6%20-%20GeneratedFiles.jpg
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/7%20-%20PostmanCollection.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/6%20-%20GeneratedFiles.jpg)
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/7%20-%20PostmanCollection.jpg)
 
 with a few adjustments, you will be able to run the API.
-https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/8%20-%20RunningApi.jpg
+(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/8%20-%20RunningApi.jpg)
 
 ## Attention
 The purpose of the Best Practices Framework Generator is to create initial code, eliminating all necessary boilerplate and allowing you to focus on what matters most: implementing your domain rules.
