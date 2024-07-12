@@ -89,7 +89,7 @@ You can generate necessary files to all layers for each entity(model) you want.
 
 ## Using the extension
 Create a new project and select the Best.Practices solution template
-(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/1%20-%20NewProject.jpg)
+!(https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/1%20-%20NewProject.jpg)
 
 A solution will be created with a suggested structure
 (https://github.com/eliassilvadev/BestPracticesCodeGenerator/blob/main/Resources/2%20-%20SolutionTemplate.jpg)
