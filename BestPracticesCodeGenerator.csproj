@@ -139,6 +139,14 @@
       <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
     <Resource Include="Resources\delete.png" />
+    <Content Include="Resources\1 - NewProject.jpg" />
+    <Content Include="Resources\2 - SolutionTemplate.jpg" />
+    <Content Include="Resources\3 - SolutionStructure.jpg" />
+    <Content Include="Resources\4 - RightClickMenu.jpg" />
+    <Content Include="Resources\5 - ToolWindowOptio ns.jpg" />
+    <Content Include="Resources\6 - GeneratedFiles.jpg" />
+    <Content Include="Resources\7 - PostmanCollection.jpg" />
+    <Content Include="Resources\8 - RunningApi.jpg" />
     <Content Include="Resources\frmCodeGenerationOptionsCommand.png" />
     <Resource Include="Resources\generatefile.png" />
     <Content Include="Resources\Icon.png">

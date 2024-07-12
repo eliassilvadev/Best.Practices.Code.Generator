@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BestPracticesCodeGenerator.1bda164c-2fba-43e6-91bb-424ac2a31dac" Version="1.0" Language="en-US" Publisher="Elias Silva" />
-        <DisplayName>BestPracticesGenerator</DisplayName>
+        <Identity Id="BestPracticesCodeGenerator.1bda164c-2fba-43e6-91bb-424ac2a31dac" Version="0.0.1" Language="en-US" Publisher="Elias Silva" />
+        <DisplayName>Best Practices generator</DisplayName>
         <Description xml:space="preserve">Generate clean architecture structure with Best.Practices framework</Description>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
-        <Tags>Clean architecture,DDD, OOP,Repository, Dapper</Tags>
+        <Tags>C#, CSharp,Clean architecture, DDD, OOP, Repository, Unit Tests, Dapper, Productivity</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">

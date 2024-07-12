@@ -48,7 +48,8 @@ namespace BestPracticesCodeGenerator.Dtos
                 className = type.GetSubstringBetween("<", ">");
             }
 
-            type = type.Replace(className, prefixClassName + className + sufixClassName);
+            if (!this.IsPrimitive())
+                type = type.Replace(className, prefixClassName + className + sufixClassName);
 
             return type;
         }
