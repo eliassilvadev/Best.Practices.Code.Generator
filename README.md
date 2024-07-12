@@ -3,7 +3,7 @@
 A Visual Studio extension that generates the code from clean architecture approach based on an entity class and its properties.
 
 Download the extension at the
-[VS Gallery](https://visualstudiogallery.msdn.microsoft.com/XXXXXXXXXXXXX)
+[VS Gallery](https://marketplace.visualstudio.com/items?itemName=EliasSilva.BestPracticesGenerator)
 
 ## What does it do?
 This extension generates code for the solution and classes based on [Best Practices framework](https://github.com/eliassilvadev/best-practices) for all Domain-Driven Design (DDD) layers and Clean Architecture layers.
@@ -110,7 +110,7 @@ with a few adjustments, you will be able to run the API.
 
 ## Attention
 The purpose of the Best Practices Framework Generator is to create initial code, eliminating all necessary boilerplate and allowing you to focus on what matters most: implementing your domain rules.
-After generating the initial code, you'll need to get hands-on to finalize the implementations.
+After generating the initial code, you'll need to get hands-on to finalize the implementations and write unit tests.
 **Don't expect the generator to do everything for you!**
 
 ## License

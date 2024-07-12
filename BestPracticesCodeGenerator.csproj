@@ -150,7 +150,7 @@
     <Content Include="Resources\frmCodeGenerationOptionsCommand.png" />
     <Resource Include="Resources\generatefile.png" />
     <Content Include="Resources\Icon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
