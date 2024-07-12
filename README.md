@@ -14,62 +14,62 @@ This extension simplifies the process by creating all the necessary files within
 Types of files that this extension can do for you:
 
 **Solution:**
-	- A solution based on a template with all layers using clean architecture, DDD, and unit tests.
+ - A solution based on a template with all layers using clean architecture, DDD, and unit tests.
 
 For each entity(model) you want you can generate necessary files to all layers.
 
 **From Domain Layer:**
-	- Interface for the repository
-	- Implementation class for the repository
-	- Interface for the command provider
+ - Interface for the repository
+ - Implementation class for the repository
+ - Interface for the command provider
 	
 **From Application Layer:**
-	- Dto record for create use case input
-	- Dto record for update use case input
-	- Dto record for use case output
-	- Dto record for get by filter paginated use case output
-	- Validation class for the dto create use case input
-	- Validation class for the dto update use case input
-	- Create Use Case class for the entity
-		- Preventing register duplication if you need
-	- Update Use Case class for the entity		
-		- Preventing register duplication if you need
-		- Validate if the entity exists on repository
-	- Delete Use Case class for the entity
-		- Validate if the entity exists on repository
-	- GetById Use case class
-		- Validate if the entity exists on repository
-	- GetPaginated use case
-	- Interface for query provider (used in GetById UseCase)
-	- Interface for list item query provider (used in GetPaginated Use Case)
-	- Error messages constants creation
-	- Set Dependencies mappings for use cases	
-	- Set Dependencies mappings for validators
+ - Dto record for create use case input
+ - Dto record for update use case input
+ - Dto record for use case output
+ - Dto record for get by filter paginated use case output
+ - Validation class for the dto create use case input
+ - Validation class for the dto update use case input
+ - Create Use Case class for the entity
+ 	- Preventing register duplication if you need
+ - Update Use Case class for the entity		
+ 	- Preventing register duplication if you need
+ 	- Validate if the entity exists on repository
+ - Delete Use Case class for the entity
+ 	- Validate if the entity exists on repository
+ - GetById Use case class
+ 	- Validate if the entity exists on repository
+ - GetPaginated use case
+ - Interface for query provider (used in GetById UseCase)
+ - Interface for list item query provider (used in GetPaginated Use Case)
+ - Error messages constants creation
+ - Set Dependencies mappings for use cases	
+ - Set Dependencies mappings for validators
 	
 **From Infrastructure Layer:**
-	- Dapper command class for the entity
-	- Dapper command provider class for the entity
-	- Dapper query provider class that implements commandProvider
-	- Dapper query provider class that implements list item query provider
-	- Dapper Table definiton class for the entity
-	- Set Dependencies mappings for command providers
-	- Set Dependencies mappings for query providers
-    - Migration Sql Script to create the table that represents the entity
+ - Dapper command class for the entity
+ - Dapper command provider class for the entity
+ - Dapper query provider class that implements commandProvider
+ - Dapper query provider class that implements list item query provider
+ - Dapper Table definiton class for the entity
+ - Set Dependencies mappings for command providers
+ - Set Dependencies mappings for query providers
+ - Migration Sql Script to create the table that represents the entity
 	
 **From Unit Tests Layer:**
-	- Builder class for the create use case input dto
-	- Builder class for the update use case input dto
-	- Builder class for the use case output dto
-	- Builder class for the list use case output dto
-	- Builder class for the entity
-	- Unit tests class for the entity
-		- Test for each method
-	- Unit tests class for create use case input dto validation  
-	- Unit tests class for update use case input dto validation
-	- Unit tests class for create use case
-	- Unit tests class for update use case
-	- Unit tests class for delete use case
-	- Unit tests class for get by id use case
+ - Builder class for the create use case input dto
+ - Builder class for the update use case input dto
+ - Builder class for the use case output dto
+ - Builder class for the list use case output dto
+ - Builder class for the entity
+ - Unit tests class for the entity
+ 	- Test for each method
+ - Unit tests class for create use case input dto validation  
+ - Unit tests class for update use case input dto validation
+ - Unit tests class for create use case
+ - Unit tests class for update use case
+ - Unit tests class for delete use case
+ - Unit tests class for get by id use case
 
 **From Presentation Layer:**
  - Controller for entity operations:
